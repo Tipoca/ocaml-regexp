@@ -1,0 +1,1574 @@
+
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD><TITLE></TITLE>
+<META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<META name="GENERATOR" content="hevea 1.05">
+</HEAD>
+<BODY >
+<!--HEVEA command line is: hevea -fix -exec xxdate.exe /users/demons/demons/tex/inputs/ocamlweb.sty regexp.tex -->
+<!--HTMLHEAD-->
+<!--ENDHTML-->
+<!--CUT DEF chapter 1 -->
+
+<BR>
+<BR>
+
+
+<BR>
+<BR>
+
+<H1 ALIGN=center>A simple library for regular expressions</H1>
+
+<H3 ALIGN=center>Claude Marché</H3>
+
+<H3 ALIGN=center>June 20, 2002</H3><!--TOC chapter Introduction-->
+
+<H1>Chapter&nbsp;1&nbsp;&nbsp; Introduction</H1><!--SEC END -->
+This library implements simple use of regular expressions. It provides
+direct definitions of regular expressions form the usual
+constructions, or definition of such expressions form a syntactic
+manner using GNU regexp syntax. It provides a simple compilation of
+regexp into a deterministic automaton, and use of such an automaton for
+matching and searching.<BR>
+<BR>
+<!--TOC chapter Library documentation-->
+
+<H1>Chapter&nbsp;2&nbsp;&nbsp; Library documentation</H1><!--SEC END -->
+This is the documentation for use of the library. It provides all
+functions in one module.<BR>
+<BR>
+
+<!--TOC section Module <I><FONT COLOR=maroon>Regexp</FONT></I>-->
+
+<H2>2.1&nbsp;&nbsp; Module <I><FONT COLOR=maroon>Regexp</FONT></I></H2><!--SEC END -->
+
+<A NAME="regexp.mli:0"></A><!--TOC subsection The regexp datatype and its constructors-->
+
+<H3>2.1.1&nbsp;&nbsp; The regexp datatype and its constructors</H3><!--SEC END -->
+The type of regular expressions is abstract. Regular expressions may
+be built from the following constructors :<BR>
+<BR>
+<UL>
+<LI> <I><FONT COLOR=maroon>empty</FONT></I> is the regexp that denotes no word at all.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>epsilon</FONT></I> is the regexp that denotes the empty word.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>char</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I> returns a regexp that denotes only the single-character
+word <I><FONT COLOR=maroon>c</FONT></I>.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>char_interv</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I> returns a regexp that denotes any single-character
+word belonging to char interval <I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>string</FONT></I>&nbsp;<I><FONT COLOR=maroon>str</FONT></I> denotes the string <I><FONT COLOR=maroon>str</FONT></I> itself. <BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>star</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I> where <I><FONT COLOR=maroon>e</FONT></I> is a regexp, denotes the Kleene iteration of
+<I><FONT COLOR=maroon>e</FONT></I>, that is all the words made of concatenation of zero, one or more
+words of <I><FONT COLOR=maroon>e</FONT></I>.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>alt</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I> returns a regexp for the union of languages of <I><FONT COLOR=maroon>e1</FONT></I>
+and <I><FONT COLOR=maroon>e2</FONT></I>.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>seq</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I> returns a regexp for the concatenation of languages
+of <I><FONT COLOR=maroon>e1</FONT></I> and <I><FONT COLOR=maroon>e2</FONT></I>.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>opt</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I> returns a regexp for the set of words of <I><FONT COLOR=maroon>e</FONT></I> and the
+empty word.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>some</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I> denotes all the words made of concatenation of one or
+more words of <I><FONT COLOR=maroon>e</FONT></I>.</UL><BR><A NAME="regexp.mli:1075"></A>
+<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regexp.mli:1090"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>empty</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regexp.mli:1111"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>epsilon</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regexp.mli:1134"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>char</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regexp.mli:1162"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>char_interv</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regexp.mli:1205"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regexp.mli:1237"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>star</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regexp.mli:1267"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>alt</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regexp.mli:1306"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>seq</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regexp.mli:1345"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>opt</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regexp.mli:1374"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>some</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<!--TOC subsection Regexp matching by runtime interpretation of regexp-->
+
+<H3>2.1.2&nbsp;&nbsp; Regexp matching by runtime interpretation of regexp</H3><!--SEC END -->
+ <I><FONT COLOR=maroon>match_string</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I> returns true if the string <I><FONT COLOR=maroon>s</FONT></I> is in the language
+ denoted by <I><FONT COLOR=maroon>r</FONT></I>. This function is by no means efficient, but it is
+ enough if you just need to match once a simple regexp against a
+ string.<BR>
+<BR>
+ If you have a complicated regexp, or if you're going to match the
+ same regexp repeatedly against several strings, we recommend to use
+ compilation of regexp provided by module <I><FONT COLOR=maroon>Automata</FONT></I>.<BR>
+<BR>
+<BR><A NAME="regexp.mli:1891"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>match_string</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>bool</FONT></I><BR>
+<BR>
+<!--TOC subsection Syntax of regular expressions-->
+
+<H3>2.1.3&nbsp;&nbsp; Syntax of regular expressions</H3><!--SEC END -->
+ This function offers a way of building regular expressions
+ syntactically, following more or less the GNU regexp syntax as in
+ egrep. This is summarized in the table of figure&nbsp;<A HREF="#figure:regexp">2.1</A>.<BR>
+<BR>
+<BLOCKQUOTE><DIV ALIGN=center><HR WIDTH="80%" SIZE=2></DIV>
+<DIV ALIGN=center>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=1>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><I><FONT COLOR=maroon>char</FONT></I></TD>
+<TD VALIGN=top ALIGN=left>denotes the character <I><FONT COLOR=maroon>char</FONT></I> for all non-special chars</TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><CODE>\</CODE><I><FONT COLOR=maroon>char</FONT></I></TD>
+<TD VALIGN=top ALIGN=left>denotes the character <I><FONT COLOR=maroon>char</FONT></I> for special characters <CODE>.</CODE>, <CODE>\</CODE>, <CODE>*</CODE>, <CODE>+</CODE>, <CODE>?</CODE>, <CODE>[</CODE> and <CODE>]</CODE></TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><CODE>.</CODE></TD>
+<TD VALIGN=top ALIGN=left>denotes any single-character word</TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><CODE>[</CODE><I><FONT COLOR=maroon>set</FONT></I><CODE>]</CODE></TD>
+<TD VALIGN=top ALIGN=left>denotes any single-character word belonging to <I><FONT COLOR=maroon>set</FONT></I>. Intervals may be given as in <CODE>[a-z]</CODE>.</TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><CODE>[^</CODE><I><FONT COLOR=maroon>set</FONT></I><CODE>]</CODE></TD>
+<TD VALIGN=top ALIGN=left>denotes any single-character word not belonging to <I><FONT COLOR=maroon>set</FONT></I>.</TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><I><FONT COLOR=maroon>regexp</FONT></I><CODE>*</CODE></TD>
+<TD VALIGN=top ALIGN=left>denotes the Kleene star of <I><FONT COLOR=maroon>regexp</FONT></I></TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><I><FONT COLOR=maroon>regexp</FONT></I><CODE>+</CODE></TD>
+<TD VALIGN=top ALIGN=left>denotes any concatenation of one or more words of <I><FONT COLOR=maroon>regexp</FONT></I></TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><I><FONT COLOR=maroon>regexp</FONT></I><CODE>?</CODE></TD>
+<TD VALIGN=top ALIGN=left>denotes the empty word or any word denoted by <I><FONT COLOR=maroon>regexp</FONT></I></TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>1</FONT></FONT></I></SUB><CODE>|</CODE><I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>2</FONT></FONT></I></SUB></TD>
+<TD VALIGN=top ALIGN=left>denotes any words in <I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>1</FONT></FONT></I></SUB> or in <I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>2</FONT></FONT></I></SUB></TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>1</FONT></FONT></I></SUB><I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>2</FONT></FONT></I></SUB></TD>
+<TD VALIGN=top ALIGN=left>denotes any contecatenation of a word of <I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>1</FONT></FONT></I></SUB> and a word of <I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>2</FONT></FONT></I></SUB></TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><CODE>(</CODE><I><FONT COLOR=maroon>regexp</FONT></I><CODE>)</CODE></TD>
+<TD VALIGN=top ALIGN=left>parentheses, denotes the same words as <I><FONT COLOR=maroon>regexp</FONT></I>.</TD>
+</TR></TABLE>
+</DIV>
+<BR>
+<DIV ALIGN=center>Figure 2.1: Syntax of regular expressions</DIV><BR>
+
+<A NAME="figure:regexp"></A>
+<DIV ALIGN=center><HR WIDTH="80%" SIZE=2></DIV></BLOCKQUOTE> Moreover, the postfix operators <CODE>*</CODE>, <CODE>+</CODE> and <CODE>?</CODE> have priority over the concatenation, itself having priority over alternation with <CODE>|</CODE><BR>
+<BR>
+ <I><FONT COLOR=maroon>from_string</FONT></I>&nbsp;<I><FONT COLOR=maroon>str</FONT></I> builds a regexp by interpreting syntactically the
+ string <I><FONT COLOR=maroon>str</FONT></I>. The syntax must follow the table above. It raises
+ exception <I><FONT COLOR=maroon>Invalid_argument</FONT></I>&nbsp;<TT>"from_string"</TT> if the syntax is not
+ correct.<BR>
+<BR>
+<BR><A NAME="regexp.mli:3966"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>from_string</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<!--TOC subsection Compilation of regular expressions-->
+
+<H3>2.1.4&nbsp;&nbsp; Compilation of regular expressions</H3><!--SEC END -->
+<BR><A NAME="regexp.mli:4067"></A>
+<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>compiled_regexp</FONT></I><BR>
+<BR>
+<A NAME="regexp.mli:4091"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>compile</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>compiled_regexp</FONT></I><BR>
+<BR>
+<!--TOC subsection Matching and searching functions-->
+
+<H3>2.1.5&nbsp;&nbsp; Matching and searching functions</H3><!--SEC END -->
+<BR><I><FONT COLOR=maroon>search_forward</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;<I><FONT COLOR=maroon>str</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I> search in the string <I><FONT COLOR=maroon>str</FONT></I>, starting at
+ position <I><FONT COLOR=maroon>pos</FONT></I> a word that is in the language of <I><FONT COLOR=maroon>r</FONT></I>. Returns a pair
+ (<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>e</FONT></I>) where <I><FONT COLOR=maroon>b</FONT></I> is position of the first char matched, and <I><FONT COLOR=maroon>e</FONT></I> is
+ the position following the position of the last char matched.<BR>
+<BR>
+ Raises <I><FONT COLOR=maroon>Not_found</FONT></I> of no matching word is found.<BR>
+<BR>
+ Notice: even if the regular expression accepts the empty word, this
+ function will never return (<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>e</FONT></I>) with <I><FONT COLOR=maroon>e</FONT></I>=<I><FONT COLOR=maroon>b</FONT></I>. In other words, this
+ function always search for non-empty words in the language of <I><FONT COLOR=maroon>r</FONT></I>.<BR>
+<BR>
+ Unpredictable results may occur if <I><FONT COLOR=maroon>pos</FONT></I>&nbsp;&lt;&nbsp;0.<BR>
+<BR>
+<BR><A NAME="regexp.mli:4787"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>search_forward</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>compiled_regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>int</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>int</FONT></I>&nbsp;×&nbsp;<I><FONT COLOR=maroon>int</FONT></I><BR>
+<BR>
+<I><FONT COLOR=maroon>split_strings</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I> extract from string <I><FONT COLOR=maroon>s</FONT></I> the subwords (of maximal
+ size) that are in the language of <I><FONT COLOR=maroon>r</FONT></I>. For example <I><FONT COLOR=maroon>split_strings</FONT></I>
+&nbsp;(<I><FONT COLOR=maroon>compile</FONT></I>&nbsp;(<I><FONT COLOR=maroon>from_string</FONT></I>&nbsp;<TT>"[0-9]+"</TT>))&nbsp;<TT>"12+3*45"</TT> returns
+ [<TT>"12"</TT>;<TT>"3"</TT>;<TT>"45"</TT>].<BR>
+<BR>
+ <I><FONT COLOR=maroon>split_delim</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I> splits string <I><FONT COLOR=maroon>s</FONT></I> into pieces delimited by
+ <I><FONT COLOR=maroon>r</FONT></I>. For example <I><FONT COLOR=maroon>split_strings</FONT></I>&nbsp;(<I><FONT COLOR=maroon>compile</FONT></I>&nbsp;(<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<CODE>':'</CODE>))
+&nbsp;<TT>"marche:G6H3a656h6g56:534:180:Claude&nbsp;Marche:/home/marche:/bin/bash"</TT>
+ returns [&nbsp;<TT>"marche"</TT>&nbsp;;&nbsp;<TT>"G6H3a656h6g56"</TT>&nbsp;;&nbsp;<TT>"534"</TT>&nbsp;;&nbsp;<TT>"180"</TT>&nbsp;;&nbsp;<TT>"Claude&nbsp;&nbsp;Marche"</TT>&nbsp;;&nbsp;<TT>"/home/marche"</TT>&nbsp;;&nbsp;<TT>"/bin/bash"</TT>].<BR>
+<BR>
+<BR><A NAME="regexp.mli:5381"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>split_strings</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>compiled_regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<I><FONT COLOR=maroon>list</FONT></I><BR>
+<BR>
+<A NAME="regexp.mli:5444"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>split_delim</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>compiled_regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<I><FONT COLOR=maroon>list</FONT></I><BR><BR>
+<BR>
+<!--TOC section Index of Identifiers-->
+
+<H2>2.2&nbsp;&nbsp; Index of Identifiers</H2><!--SEC END -->
+<UL>
+<LI>
+ <I><FONT COLOR=maroon>alt</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:1267">2.1.1</A>, 
+
+<LI> <I><FONT COLOR=maroon>char</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:1134">2.1.1</A>, 
+
+<LI> <I><FONT COLOR=maroon>char_interv</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:1162">2.1.1</A>, 
+
+<LI> <I><FONT COLOR=maroon>compile</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:4091">2.1.4</A>, 
+
+<LI> <I><FONT COLOR=maroon>compiled_regexp</FONT></I> (type),&nbsp;&nbsp;<A HREF="#regexp.mli:4067">2.1.4</A>, <A HREF="#regexp.mli:4091">2.1.4</A>, <A HREF="#regexp.mli:4787">2.1.5</A>, <A HREF="#regexp.mli:5381">2.1.5</A>, <A HREF="#regexp.mli:5444">2.1.5</A>
+
+<LI> <I><FONT COLOR=maroon>empty</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:1090">2.1.1</A>, 
+
+<LI> <I><FONT COLOR=maroon>epsilon</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:1111">2.1.1</A>, 
+
+<LI> <I><FONT COLOR=maroon>from_string</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:3966">2.1.3</A>, 
+
+<LI> <I><FONT COLOR=maroon>match_string</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:1891">2.1.2</A>, 
+
+<LI> <I><FONT COLOR=maroon>opt</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:1345">2.1.1</A>, 
+
+<LI> <I><FONT COLOR=maroon>regexp</FONT></I> (type),&nbsp;&nbsp;<A HREF="#regexp.mli:1075">2.1.1</A>, <A HREF="#regexp.mli:1090">2.1.1</A>, <A HREF="#regexp.mli:1111">2.1.1</A>, <A HREF="#regexp.mli:1134">2.1.1</A>, <A HREF="#regexp.mli:1162">2.1.1</A>, <A HREF="#regexp.mli:1205">2.1.1</A>, <A HREF="#regexp.mli:1237">2.1.1</A>, <A HREF="#regexp.mli:1267">2.1.1</A>, <A HREF="#regexp.mli:1306">2.1.1</A>, <A HREF="#regexp.mli:1345">2.1.1</A>, <A HREF="#regexp.mli:1374">2.1.1</A>, <A HREF="#regexp.mli:1891">2.1.2</A>, <A HREF="#regexp.mli:3966">2.1.3</A>, <A HREF="#regexp.mli:4091">2.1.4</A>
+
+<LI> <I><FONT COLOR=maroon>Regexp</FONT></I> (module),&nbsp;&nbsp;<A HREF="#regexp.mli:0">2.1</A>, 
+
+<LI> <I><FONT COLOR=maroon>search_forward</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:4787">2.1.5</A>, 
+
+<LI> <I><FONT COLOR=maroon>seq</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:1306">2.1.1</A>, 
+
+<LI> <I><FONT COLOR=maroon>some</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:1374">2.1.1</A>, 
+
+<LI> <I><FONT COLOR=maroon>split_delim</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:5444">2.1.5</A>, 
+
+<LI> <I><FONT COLOR=maroon>split_strings</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:5381">2.1.5</A>, 
+
+<LI> <I><FONT COLOR=maroon>star</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:1237">2.1.1</A>, 
+
+<LI> <I><FONT COLOR=maroon>string</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp.mli:1205">2.1.1</A>, </UL>
+<BR>
+<BR>
+<!--TOC chapter Documentation of implementation-->
+
+<H1>Chapter&nbsp;3&nbsp;&nbsp; Documentation of implementation</H1><!--SEC END -->
+This part describe the implementation of the library. It provides
+several modules which depends each other as shown by the graph below.<BR>
+<BR>
+<DIV ALIGN=center>
+<IMG SRC="regexp001.gif">
+</DIV><BR>
+
+<!--TOC section Module <I><FONT COLOR=maroon>Hashcons</FONT></I>-->
+
+<H2>3.1&nbsp;&nbsp; Module <I><FONT COLOR=maroon>Hashcons</FONT></I></H2><!--SEC END -->
+
+<A NAME="hashcons.mli:0"></A>* hashcons: hash tables for hash consing
+Copyright (C) 2000 Jean-Christophe FILLIATRE<BR>
+<BR>
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Library General Public
+License version 2, as published by the Free Software Foundation.<BR>
+<BR>
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.<BR>
+<BR>
+See the GNU Library General Public License version 2 for more details
+(enclosed in the file LGPL).<BR>
+<BR>
+<BR><A NAME="hashcons.mli:602"></A>Hash tables for hash consing. Hash consed values are of the
+ following type <I><FONT COLOR=maroon>hash_consed</FONT></I>. The field <I><FONT COLOR=maroon>tag</FONT></I> contains a unique
+ integer (for values hash consed with the same table). The field
+ <I><FONT COLOR=maroon>hkey</FONT></I> contains the hash key of the value (without modulo) for
+ possible use in other hash tables (and internally when hash
+ consing tables are resized). The field <I><FONT COLOR=maroon>node</FONT></I>}&nbsp;<I><FONT COLOR=maroon>contains</FONT></I>&nbsp;<I><FONT COLOR=maroon>the</FONT></I>&nbsp;<I><FONT COLOR=maroon>value</FONT></I>
+&nbsp;<I><FONT COLOR=maroon>itself</FONT></I>.&nbsp;
+<BR><A NAME="hashcons.mli:1016"></A>
+<FONT COLOR=purple>type</FONT>&nbsp;<FONT FACE=symbol>a</FONT>&nbsp;<I><FONT COLOR=maroon>hash_consed</FONT></I>&nbsp;=&nbsp;{&nbsp;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>hkey</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>int</FONT></I>;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>tag</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>int</FONT></I>;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>node</FONT></I>&nbsp;:&nbsp;<FONT FACE=symbol>a</FONT>&nbsp;}<BR><A NAME="hashcons.mli:1085"></A>Functorial interface. 
+<BR><A NAME="hashcons.mli:1114"></A>
+<FONT COLOR=purple>module</FONT>&nbsp;<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>HashedType</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>sig</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>t</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>equal</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>t</FONT></I>&nbsp;×&nbsp;<I><FONT COLOR=maroon>t</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>bool</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>hash</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>t</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>int</FONT></I><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>end</FONT><BR>
+<BR>
+<A NAME="hashcons.mli:1217"></A>
+<FONT COLOR=purple>module</FONT>&nbsp;<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>S</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>sig</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>key</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>t</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>create</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>int</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>t</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>hashcons</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>t</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>key</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>key</FONT></I>&nbsp;<I><FONT COLOR=maroon>hash_consed</FONT></I><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>end</FONT><BR>
+<BR>
+<A NAME="hashcons.mli:1464"></A>
+<FONT COLOR=purple>module</FONT>&nbsp;<I><FONT COLOR=maroon>Make</FONT></I>(<I><FONT COLOR=maroon>H</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>HashedType</FONT></I>)&nbsp;:&nbsp;(<I><FONT COLOR=maroon>S</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT>&nbsp;<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>key</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>H.</FONT></I><I><FONT COLOR=maroon>t</FONT></I>)<BR><BR>
+<!--TOC section Module <I><FONT COLOR=maroon>Regular_expr</FONT></I>-->
+
+<H2>3.2&nbsp;&nbsp; Module <I><FONT COLOR=maroon>Regular_expr</FONT></I></H2><!--SEC END -->
+
+<A NAME="regular_expr.mli:0"></A>This module defines the regular expressions, and provides some simple
+manipulation of them.<BR>
+<BR>
+<!--TOC subsection The regexp datatype and its constructors-->
+
+<H3>3.2.1&nbsp;&nbsp; The regexp datatype and its constructors</H3><!--SEC END -->
+The type of regular expressions is abstract. Regular expressions may
+be built from the following constructors :<BR>
+<BR>
+<UL>
+<LI> <I><FONT COLOR=maroon>empty</FONT></I> is the regexp that denotes no word at all.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>epsilon</FONT></I> is the regexp that denotes the empty word.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>char</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I> returns a regexp that denotes only the single-character
+word <I><FONT COLOR=maroon>c</FONT></I>.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>chars</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I> returns a regexp that denotes any single-character
+word belonging to set of chars <I><FONT COLOR=maroon>s</FONT></I>.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>string</FONT></I>&nbsp;<I><FONT COLOR=maroon>str</FONT></I> denotes the string <I><FONT COLOR=maroon>str</FONT></I> itself. <BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>star</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I> where <I><FONT COLOR=maroon>e</FONT></I> is a regexp, denotes the Kleene iteration of
+<I><FONT COLOR=maroon>e</FONT></I>, that is all the words made of concatenation of zero, one or more
+words of <I><FONT COLOR=maroon>e</FONT></I>.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>alt</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I> returns a regexp for the union of languages of <I><FONT COLOR=maroon>e1</FONT></I>
+and <I><FONT COLOR=maroon>e2</FONT></I>.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>seq</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I> returns a regexp for the concatenation of languages
+of <I><FONT COLOR=maroon>e1</FONT></I> and <I><FONT COLOR=maroon>e2</FONT></I>.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>opt</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I> returns a regexp for the set of words of <I><FONT COLOR=maroon>e</FONT></I> and the
+empty word.<BR>
+<BR>
+
+<LI> <I><FONT COLOR=maroon>some</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I> denotes all the words made of concatenation of one or
+more words of <I><FONT COLOR=maroon>e</FONT></I>.</UL><BR><A NAME="regular_expr.mli:1156"></A>
+<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.mli:1170"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>uniq_tag</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>int</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.mli:1202"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>empty</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.mli:1223"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>epsilon</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.mli:1246"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>char</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.mli:1274"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>char_interv</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.mli:1317"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.mli:1349"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>star</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.mli:1379"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>alt</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.mli:1418"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>seq</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.mli:1457"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>opt</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.mli:1486"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>some</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<BR>
+<!--TOC subsection Simple regexp operations-->
+
+<H3>3.2.2&nbsp;&nbsp; Simple regexp operations</H3><!--SEC END -->
+ The following three functions provide some simple operations on
+ regular expressions:<BR>
+<BR>
+ <UL>
+<LI><BR>
+<BR>
+  <I><FONT COLOR=maroon>nullable</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I> returns <FONT COLOR=purple>true</FONT> if regexp <I><FONT COLOR=maroon>r</FONT></I> accepts the empty
+ word.<BR>
+<BR>
+ 
+<LI> <I><FONT COLOR=maroon>residual</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I> returns the regexp <I><FONT COLOR=maroon>r'</FONT></I> denoting the language
+ of words <I>w</I> such that <I><FONT COLOR=maroon>c</FONT></I><I>w</I> is in the language of <I><FONT COLOR=maroon>r</FONT></I>.<BR>
+<BR>
+ 
+<LI> <I><FONT COLOR=maroon>firstchars</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I> returns the set of characters that may occur at
+ the beginning of words in the language of <I><FONT COLOR=maroon>e</FONT></I>.<BR>
+<BR>
+ </UL><BR><A NAME="regular_expr.mli:2020"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>nullable</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>bool</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.mli:2052"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>residual</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>int</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<BR>
+<BR>
+<A NAME="regular_expr.mli:2094"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>firstchars</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;(<I><FONT COLOR=maroon>int</FONT></I>&nbsp;×&nbsp;<I><FONT COLOR=maroon>int</FONT></I>&nbsp;×&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>)&nbsp;<I><FONT COLOR=maroon>list</FONT></I>&nbsp;<BR>
+<BR>
+<!--TOC subsection Regexp matching by runtime interpretation of regexp-->
+
+<H3>3.2.3&nbsp;&nbsp; Regexp matching by runtime interpretation of regexp</H3><!--SEC END -->
+ <I><FONT COLOR=maroon>match_string</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I> returns true if the string <I><FONT COLOR=maroon>s</FONT></I> is in the language
+ denoted by <I><FONT COLOR=maroon>r</FONT></I>. This function is by no means efficient, but it is
+ enough if you just need to match once a simple regexp against a
+ string.<BR>
+<BR>
+ If you have a complicated regexp, or if you're going to match the
+ same regexp repeatedly against several strings, we recommend to use
+ compilation of regexp provided by module <I><FONT COLOR=maroon>Automata</FONT></I>.<BR>
+<BR>
+<BR><A NAME="regular_expr.mli:2637"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>match_string</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>bool</FONT></I><BR>
+<BR>
+pretty-printer<BR>
+<BR>
+<BR><A NAME="regular_expr.mli:2713"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>fprint</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>Format.</FONT></I><I><FONT COLOR=maroon>formatter</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>unit</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.mli:2763"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>print</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>unit</FONT></I><BR>
+<!--TOC section Implementation of module <I><FONT COLOR=maroon>Regular_expr</FONT></I>-->
+
+<H2>3.3&nbsp;&nbsp; Implementation of module <I><FONT COLOR=maroon>Regular_expr</FONT></I></H2><!--SEC END -->
+
+<A NAME="regular_expr.ml:0"></A><!--TOC subsection regexp datatype and simplifying constructors-->
+
+<H3>3.3.1&nbsp;&nbsp; regexp datatype and simplifying constructors</H3><!--SEC END -->
+<BR><A NAME="regular_expr.ml:69"></A>
+<FONT COLOR=purple>open</FONT>&nbsp;<I><FONT COLOR=maroon>Hashcons</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.ml:86"></A>
+<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>regexp_struct</FONT></I>&nbsp;<I><FONT COLOR=maroon>Hashcons.</FONT></I><I><FONT COLOR=maroon>hash_consed</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.ml:136"></A>
+<FONT COLOR=purple>and</FONT>&nbsp;<I><FONT COLOR=maroon>regexp_struct</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Empty</FONT></I><BR>&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Epsilon</FONT></I><BR>&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Char_interv</FONT></I>&nbsp;<FONT COLOR=purple>of</FONT>&nbsp;<I><FONT COLOR=maroon>int</FONT></I>&nbsp;×&nbsp;<I><FONT COLOR=maroon>int</FONT></I><BR>&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>String</FONT></I>&nbsp;<FONT COLOR=purple>of</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;(* length at least 2 *)<BR>&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Star</FONT></I>&nbsp;<FONT COLOR=purple>of</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR>&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Alt</FONT></I>&nbsp;<FONT COLOR=purple>of</FONT>&nbsp;<I><FONT COLOR=maroon>regexp_struct</FONT></I>&nbsp;<I><FONT COLOR=maroon>Ptset.</FONT></I><I><FONT COLOR=maroon>t</FONT></I><BR>&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Seq</FONT></I>&nbsp;<FONT COLOR=purple>of</FONT>&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;×&nbsp;<I><FONT COLOR=maroon>regexp</FONT></I><BR><BR>
+<BR>
+<A NAME="regular_expr.ml:345"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>uniq_tag</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>r.</FONT></I><I><FONT COLOR=maroon>tag</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.ml:371"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>regexp_eq</FONT></I>&nbsp;(<I><FONT COLOR=maroon>r1</FONT></I>,<I><FONT COLOR=maroon>r2</FONT></I>)&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;(<I><FONT COLOR=maroon>r1</FONT></I>,<I><FONT COLOR=maroon>r2</FONT></I>)&nbsp;<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Empty</FONT></I>,<I><FONT COLOR=maroon>Empty</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<FONT COLOR=purple>true</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Epsilon</FONT></I>,<I><FONT COLOR=maroon>Epsilon</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<FONT COLOR=purple>true</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Alt</FONT></I>&nbsp;<I><FONT COLOR=maroon>s1</FONT></I>,<I><FONT COLOR=maroon>Alt</FONT></I>&nbsp;<I><FONT COLOR=maroon>s2</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>Ptset.</FONT></I><I><FONT COLOR=maroon>equalq</FONT></I>&nbsp;<I><FONT COLOR=maroon>s1</FONT></I>&nbsp;<I><FONT COLOR=maroon>s2</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Star</FONT></I>&nbsp;<I><FONT COLOR=maroon>r1</FONT></I>,<I><FONT COLOR=maroon>Star</FONT></I>&nbsp;<I><FONT COLOR=maroon>r2</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>r1</FONT></I>&nbsp;<FONT FACE=symbol>º</FONT>&nbsp;<I><FONT COLOR=maroon>r2</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Seq</FONT></I>(<I><FONT COLOR=maroon>s11</FONT></I>,<I><FONT COLOR=maroon>s12</FONT></I>),<I><FONT COLOR=maroon>Seq</FONT></I>(<I><FONT COLOR=maroon>s21</FONT></I>,<I><FONT COLOR=maroon>s22</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>s11</FONT></I>&nbsp;<FONT FACE=symbol>º</FONT>&nbsp;<I><FONT COLOR=maroon>s21</FONT></I>&nbsp;&amp;&nbsp;<I><FONT COLOR=maroon>s12</FONT></I>&nbsp;<FONT FACE=symbol>º</FONT>&nbsp;<I><FONT COLOR=maroon>s22</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>String</FONT></I>&nbsp;<I><FONT COLOR=maroon>s1</FONT></I>,<I><FONT COLOR=maroon>String</FONT></I>&nbsp;<I><FONT COLOR=maroon>s2</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>s1</FONT></I>=<I><FONT COLOR=maroon>s2</FONT></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Char_interv</FONT></I>(<I><FONT COLOR=maroon>a1</FONT></I>,<I><FONT COLOR=maroon>b1</FONT></I>),<I><FONT COLOR=maroon>Char_interv</FONT></I>(<I><FONT COLOR=maroon>a2</FONT></I>,<I><FONT COLOR=maroon>b2</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>a1</FONT></I><FONT FACE=symbol>º</FONT><I><FONT COLOR=maroon>a2</FONT></I>&nbsp;&amp;&nbsp;<I><FONT COLOR=maroon>b1</FONT></I>&nbsp;<FONT FACE=symbol>º</FONT>&nbsp;<I><FONT COLOR=maroon>b2</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>_</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<FONT COLOR=purple>false</FONT><BR>
+<BR>
+<A NAME="regular_expr.ml:729"></A>
+<FONT COLOR=purple>module</FONT>&nbsp;<I><FONT COLOR=maroon>Hash</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Hashcons.Make</FONT></I>(<FONT COLOR=purple>struct</FONT>&nbsp;<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>t</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>regexp_struct</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>equal</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>regexp_eq</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>hash</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Hashtbl.</FONT></I><I><FONT COLOR=maroon>hash</FONT></I>&nbsp;<FONT COLOR=purple>end</FONT>)<BR>
+<BR>
+<A NAME="regular_expr.ml:853"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>hash_consing_table</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Hash.</FONT></I><I><FONT COLOR=maroon>create</FONT></I>&nbsp;257<BR>
+<BR>
+<A NAME="regular_expr.ml:897"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>hash_cons</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Hash.</FONT></I><I><FONT COLOR=maroon>hashcons</FONT></I>&nbsp;<I><FONT COLOR=maroon>hash_consing_table</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.ml:947"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>empty</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>hash_cons</FONT></I>&nbsp;<I><FONT COLOR=maroon>Empty</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.ml:978"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>epsilon</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>hash_cons</FONT></I>&nbsp;<I><FONT COLOR=maroon>Epsilon</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.ml:1013"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>star</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;=&nbsp;<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;<I><FONT COLOR=maroon>e.</FONT></I><I><FONT COLOR=maroon>node</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Empty</FONT></I>&nbsp;|&nbsp;<I><FONT COLOR=maroon>Epsilon</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>epsilon</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Star</FONT></I>&nbsp;<I><FONT COLOR=maroon>_</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>e</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>_</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>hash_cons</FONT></I>&nbsp;(<I><FONT COLOR=maroon>Star</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>)<BR><BR>
+<BR>
+<A NAME="regular_expr.ml:1132"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>alt</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;<I><FONT COLOR=maroon>e1.</FONT></I><I><FONT COLOR=maroon>node</FONT></I>,<I><FONT COLOR=maroon>e2.</FONT></I><I><FONT COLOR=maroon>node</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Empty</FONT></I>,<I><FONT COLOR=maroon>_</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>_</FONT></I>,<I><FONT COLOR=maroon>Empty</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Alt</FONT></I>(<I><FONT COLOR=maroon>l1</FONT></I>),<I><FONT COLOR=maroon>Alt</FONT></I>(<I><FONT COLOR=maroon>l2</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>hash_cons</FONT></I>&nbsp;(<I><FONT COLOR=maroon>Alt</FONT></I>(<I><FONT COLOR=maroon>Ptset.</FONT></I><I><FONT COLOR=maroon>union</FONT></I>&nbsp;<I><FONT COLOR=maroon>l1</FONT></I>&nbsp;<I><FONT COLOR=maroon>l2</FONT></I>))<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Alt</FONT></I>(<I><FONT COLOR=maroon>l1</FONT></I>),<I><FONT COLOR=maroon>_</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>hash_cons</FONT></I>(<I><FONT COLOR=maroon>Alt</FONT></I>(<I><FONT COLOR=maroon>Ptset.</FONT></I><I><FONT COLOR=maroon>add</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I>&nbsp;<I><FONT COLOR=maroon>l1</FONT></I>))<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>_</FONT></I>,<I><FONT COLOR=maroon>Alt</FONT></I>(<I><FONT COLOR=maroon>l2</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>hash_cons</FONT></I>(<I><FONT COLOR=maroon>Alt</FONT></I>(<I><FONT COLOR=maroon>Ptset.</FONT></I><I><FONT COLOR=maroon>add</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;<I><FONT COLOR=maroon>l2</FONT></I>))<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>_</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I><FONT FACE=symbol>º</FONT><I><FONT COLOR=maroon>e2</FONT></I>&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT>&nbsp;<I><FONT COLOR=maroon>hash_cons</FONT></I>(<I><FONT COLOR=maroon>Alt</FONT></I>(<I><FONT COLOR=maroon>Ptset.</FONT></I><I><FONT COLOR=maroon>add</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;(<I><FONT COLOR=maroon>Ptset.</FONT></I><I><FONT COLOR=maroon>singleton</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I>)))<BR><BR>
+<BR>
+<A NAME="regular_expr.ml:1471"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>seq</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;<I><FONT COLOR=maroon>e1.</FONT></I><I><FONT COLOR=maroon>node</FONT></I>,<I><FONT COLOR=maroon>e2.</FONT></I><I><FONT COLOR=maroon>node</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Empty</FONT></I>,<I><FONT COLOR=maroon>_</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>empty</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>_</FONT></I>,<I><FONT COLOR=maroon>Empty</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>empty</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Epsilon</FONT></I>,<I><FONT COLOR=maroon>_</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>_</FONT></I>,<I><FONT COLOR=maroon>Epsilon</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>_</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>hash_cons</FONT></I>(<I><FONT COLOR=maroon>Seq</FONT></I>(<I><FONT COLOR=maroon>e1</FONT></I>,<I><FONT COLOR=maroon>e2</FONT></I>))<BR><BR>
+<BR>
+<A NAME="regular_expr.ml:1643"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;=&nbsp;<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT>&nbsp;<I><FONT COLOR=maroon>hash_cons</FONT></I>(<I><FONT COLOR=maroon>Char_interv</FONT></I>(<I><FONT COLOR=maroon>c</FONT></I>,<I><FONT COLOR=maroon>c</FONT></I>))<BR>
+<BR>
+<A NAME="regular_expr.ml:1708"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>char_interv</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>hash_cons</FONT></I>(<I><FONT COLOR=maroon>Char_interv</FONT></I>(<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>))<BR>
+<BR>
+<A NAME="regular_expr.ml:1779"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;=&nbsp;<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>=<TT>""</TT>&nbsp;<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>then</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>epsilon</FONT></I>&nbsp;<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>length</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;=&nbsp;1&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>then</FONT>&nbsp;<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>get</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;0&nbsp;<FONT COLOR=purple>in</FONT>&nbsp;<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT>&nbsp;<I><FONT COLOR=maroon>hash_cons</FONT></I>(<I><FONT COLOR=maroon>String</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>)<BR>
+<BR>
+<!--TOC subsection extended regexp-->
+
+<H3>3.3.2&nbsp;&nbsp; extended regexp</H3><!--SEC END -->
+<BR><A NAME="regular_expr.ml:1979"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>some</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;=&nbsp;(<I><FONT COLOR=maroon>seq</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;(<I><FONT COLOR=maroon>star</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>))<BR>
+<BR>
+<A NAME="regular_expr.ml:2012"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>opt</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;=&nbsp;(<I><FONT COLOR=maroon>alt</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;<I><FONT COLOR=maroon>epsilon</FONT></I>)<BR>
+<BR>
+<!--TOC subsection Regexp match by run-time interpretation of regexp-->
+
+<H3>3.3.3&nbsp;&nbsp; Regexp match by run-time interpretation of regexp</H3><!--SEC END -->
+<BR><A NAME="regular_expr.ml:2117"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>nullable</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;<I><FONT COLOR=maroon>r.</FONT></I><I><FONT COLOR=maroon>node</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Empty</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<FONT COLOR=purple>false</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Epsilon</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<FONT COLOR=purple>true</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Char_interv</FONT></I>(<I><FONT COLOR=maroon>n1</FONT></I>,<I><FONT COLOR=maroon>n2</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<FONT COLOR=purple>false</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>String</FONT></I>&nbsp;<I><FONT COLOR=maroon>_</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<FONT COLOR=purple>false</FONT>&nbsp;(* cannot be <TT>""</TT> *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Star</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<FONT COLOR=purple>true</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Alt</FONT></I>(<I><FONT COLOR=maroon>l</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>Ptset.</FONT></I><I><FONT COLOR=maroon>exists</FONT></I>&nbsp;<I><FONT COLOR=maroon>nullable</FONT></I>&nbsp;<I><FONT COLOR=maroon>l</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Seq</FONT></I>(<I><FONT COLOR=maroon>e1</FONT></I>,<I><FONT COLOR=maroon>e2</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>nullable</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;&amp;&nbsp;<I><FONT COLOR=maroon>nullable</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I><BR><BR>
+<BR>
+<A NAME="regular_expr.ml:2396"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>residual</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;<I><FONT COLOR=maroon>r.</FONT></I><I><FONT COLOR=maroon>node</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Empty</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>empty</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Epsilon</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>empty</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Char_interv</FONT></I>(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>a</FONT></I><FONT FACE=symbol>£</FONT><I><FONT COLOR=maroon>c</FONT></I>&nbsp;&amp;&nbsp;<I><FONT COLOR=maroon>c</FONT></I><FONT FACE=symbol>£</FONT><I><FONT COLOR=maroon>b</FONT></I>&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>epsilon</FONT></I>&nbsp;<FONT COLOR=purple>else</FONT>&nbsp;<I><FONT COLOR=maroon>empty</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>String</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;(* <I><FONT COLOR=maroon>s</FONT></I> cannot be <TT>""</TT> *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>=<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>(<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>get</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;0)&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;(<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>sub</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;1&nbsp;(<I><FONT COLOR=maroon>pred</FONT></I>&nbsp;(<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>length</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>)))<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT>&nbsp;<I><FONT COLOR=maroon>empty</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Star</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>seq</FONT></I>&nbsp;(<I><FONT COLOR=maroon>residual</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>)&nbsp;<I><FONT COLOR=maroon>r</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Alt</FONT></I>(<I><FONT COLOR=maroon>l</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>Ptset.</FONT></I><I><FONT COLOR=maroon>fold</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(<FONT COLOR=purple>fun</FONT>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;<I><FONT COLOR=maroon>accu</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>alt</FONT></I>&nbsp;(<I><FONT COLOR=maroon>residual</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>)&nbsp;<I><FONT COLOR=maroon>accu</FONT></I>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>l</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>empty</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Seq</FONT></I>(<I><FONT COLOR=maroon>e1</FONT></I>,<I><FONT COLOR=maroon>e2</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>nullable</FONT></I>(<I><FONT COLOR=maroon>e1</FONT></I>)&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>alt</FONT></I>&nbsp;(<I><FONT COLOR=maroon>seq</FONT></I>&nbsp;(<I><FONT COLOR=maroon>residual</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>)&nbsp;<I><FONT COLOR=maroon>e2</FONT></I>)&nbsp;(<I><FONT COLOR=maroon>residual</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>)&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT>&nbsp;<I><FONT COLOR=maroon>seq</FONT></I>&nbsp;(<I><FONT COLOR=maroon>residual</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>)&nbsp;<I><FONT COLOR=maroon>e2</FONT></I><BR><BR>
+<BR>
+<A NAME="regular_expr.ml:2941"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>match_string</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>ref</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>for</FONT>&nbsp;<I><FONT COLOR=maroon>i</FONT></I>=0&nbsp;<FONT COLOR=purple>to</FONT>&nbsp;<I><FONT COLOR=maroon>pred</FONT></I>&nbsp;(<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>length</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>)&nbsp;<FONT COLOR=purple>do</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>e</FONT></I>&nbsp;:=&nbsp;<I><FONT COLOR=maroon>residual</FONT></I>&nbsp;!<I><FONT COLOR=maroon>e</FONT></I>&nbsp;(<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>(<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>get</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;<I><FONT COLOR=maroon>i</FONT></I>))<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>done</FONT>;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>nullable</FONT></I>&nbsp;!<I><FONT COLOR=maroon>e</FONT></I><BR><BR>
+<BR>
+<I><FONT COLOR=maroon>firstchars</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I> returns the set of characters that may start a word
+ in the language of <I><FONT COLOR=maroon>r</FONT></I><BR>
+<BR>
+<BR><A NAME="regular_expr.ml:3200"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>add</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;=&nbsp;<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&gt;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;<FONT COLOR=purple>else</FONT>&nbsp;(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>r</FONT></I>)::<I><FONT COLOR=maroon>l</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.ml:3249"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>insert</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;[&nbsp;]&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;[(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>r</FONT></I>)]<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;(<I><FONT COLOR=maroon>a1</FONT></I>,<I><FONT COLOR=maroon>b1</FONT></I>,<I><FONT COLOR=maroon>r1</FONT></I>)::<I><FONT COLOR=maroon>rest</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;&lt;&nbsp;<I><FONT COLOR=maroon>a1</FONT></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>then</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(* a &lt;= b &lt; a1 &lt;= b1 *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>r</FONT></I>)::<I><FONT COLOR=maroon>l</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<FONT FACE=symbol>£</FONT>&nbsp;<I><FONT COLOR=maroon>b1</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>then</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<FONT FACE=symbol>£</FONT>&nbsp;<I><FONT COLOR=maroon>a1</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>then</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(* a &lt;= a1 &lt;= b &lt;= b1 *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>add</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;(<I><FONT COLOR=maroon>a1</FONT></I>-1)&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;((<I><FONT COLOR=maroon>a1</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>alt</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>r1</FONT></I>)::(<I><FONT COLOR=maroon>add</FONT></I>&nbsp;(<I><FONT COLOR=maroon>b</FONT></I>+1)&nbsp;<I><FONT COLOR=maroon>b1</FONT></I>&nbsp;<I><FONT COLOR=maroon>r1</FONT></I>&nbsp;<I><FONT COLOR=maroon>rest</FONT></I>))<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(* a1 &lt; a &lt;= b &lt;= b1 *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(<I><FONT COLOR=maroon>a1</FONT></I>,<I><FONT COLOR=maroon>a</FONT></I>-1,<I><FONT COLOR=maroon>r1</FONT></I>)::(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>alt</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>r1</FONT></I>)::(<I><FONT COLOR=maroon>add</FONT></I>&nbsp;(<I><FONT COLOR=maroon>b</FONT></I>+1)&nbsp;<I><FONT COLOR=maroon>b1</FONT></I>&nbsp;<I><FONT COLOR=maroon>r1</FONT></I>&nbsp;<I><FONT COLOR=maroon>rest</FONT></I>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<FONT FACE=symbol>£</FONT>&nbsp;<I><FONT COLOR=maroon>a1</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>then</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(* a &lt;= a1 &lt;= b1 &lt; b *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>add</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;(<I><FONT COLOR=maroon>a1</FONT></I>-1)&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;((<I><FONT COLOR=maroon>a1</FONT></I>,<I><FONT COLOR=maroon>b1</FONT></I>,<I><FONT COLOR=maroon>alt</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>r1</FONT></I>)::(<I><FONT COLOR=maroon>insert</FONT></I>&nbsp;(<I><FONT COLOR=maroon>b1</FONT></I>+1)&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>rest</FONT></I>))<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<FONT FACE=symbol>£</FONT>&nbsp;<I><FONT COLOR=maroon>b1</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>then</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(* a1 &lt; a &lt;= b1 &lt; b *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(<I><FONT COLOR=maroon>a1</FONT></I>,<I><FONT COLOR=maroon>a</FONT></I>-1,<I><FONT COLOR=maroon>r1</FONT></I>)::(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b1</FONT></I>,<I><FONT COLOR=maroon>alt</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>r1</FONT></I>)::(<I><FONT COLOR=maroon>insert</FONT></I>&nbsp;(<I><FONT COLOR=maroon>b1</FONT></I>+1)&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>rest</FONT></I>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(* a1 &lt;= b1 &lt; a &lt;= b *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(<I><FONT COLOR=maroon>a1</FONT></I>,<I><FONT COLOR=maroon>b1</FONT></I>,<I><FONT COLOR=maroon>r1</FONT></I>)::(<I><FONT COLOR=maroon>insert</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>rest</FONT></I>)<BR>
+<BR>
+<A NAME="regular_expr.ml:3979"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>insert_list</FONT></I>&nbsp;<I><FONT COLOR=maroon>l1</FONT></I>&nbsp;<I><FONT COLOR=maroon>l2</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>List.</FONT></I><I><FONT COLOR=maroon>fold_right</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+(<FONT COLOR=purple>fun</FONT>&nbsp;(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>r</FONT></I>)&nbsp;<I><FONT COLOR=maroon>accu</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>insert</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>accu</FONT></I>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>l1</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>l2</FONT></I><BR><BR>
+<BR>
+<A NAME="regular_expr.ml:4089"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>firstchars</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;<I><FONT COLOR=maroon>r.</FONT></I><I><FONT COLOR=maroon>node</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Empty</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;[&nbsp;]<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Epsilon</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;[&nbsp;]<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Char_interv</FONT></I>(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;[(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>epsilon</FONT></I>)]<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>String</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>=<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>(<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>get</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;0)&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[(<I><FONT COLOR=maroon>c</FONT></I>,<I><FONT COLOR=maroon>c</FONT></I>,<I><FONT COLOR=maroon>string</FONT></I>&nbsp;(<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>sub</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;1&nbsp;(<I><FONT COLOR=maroon>pred</FONT></I>&nbsp;(<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>length</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>))))]<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Star</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>firstchars</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>List.</FONT></I><I><FONT COLOR=maroon>map</FONT></I>&nbsp;(<FONT COLOR=purple>fun</FONT>&nbsp;(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>res</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>seq</FONT></I>&nbsp;<I><FONT COLOR=maroon>res</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>))&nbsp;<I><FONT COLOR=maroon>l</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Alt</FONT></I>(<I><FONT COLOR=maroon>s</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>Ptset.</FONT></I><I><FONT COLOR=maroon>fold</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(<FONT COLOR=purple>fun</FONT>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;<I><FONT COLOR=maroon>accu</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>insert_list</FONT></I>&nbsp;(<I><FONT COLOR=maroon>firstchars</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>)&nbsp;<I><FONT COLOR=maroon>accu</FONT></I>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>s</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[&nbsp;]<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Seq</FONT></I>(<I><FONT COLOR=maroon>e1</FONT></I>,<I><FONT COLOR=maroon>e2</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>nullable</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>then</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>l1</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>firstchars</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;<FONT COLOR=purple>and</FONT>&nbsp;<I><FONT COLOR=maroon>l2</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>firstchars</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>insert_list</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(<I><FONT COLOR=maroon>List.</FONT></I><I><FONT COLOR=maroon>map</FONT></I>&nbsp;(<FONT COLOR=purple>fun</FONT>&nbsp;(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>res</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>seq</FONT></I>&nbsp;<I><FONT COLOR=maroon>res</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I>))&nbsp;<I><FONT COLOR=maroon>l1</FONT></I>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>l2</FONT></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>l1</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>firstchars</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>List.</FONT></I><I><FONT COLOR=maroon>map</FONT></I>&nbsp;(<FONT COLOR=purple>fun</FONT>&nbsp;(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>res</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>seq</FONT></I>&nbsp;<I><FONT COLOR=maroon>res</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I>))&nbsp;<I><FONT COLOR=maroon>l1</FONT></I><BR><BR>
+<BR>
+<A NAME="regular_expr.ml:4776"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>_</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>seq</FONT></I>(<I><FONT COLOR=maroon>star</FONT></I>&nbsp;(<I><FONT COLOR=maroon>alt</FONT></I>&nbsp;(<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<CODE>'a'</CODE>)&nbsp;(<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<CODE>'b'</CODE>)))&nbsp;(<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<CODE>'c'</CODE>)&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>firstchars</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.ml:4867"></A>
+<FONT COLOR=purple>open</FONT>&nbsp;<I><FONT COLOR=maroon>Format</FONT></I><BR>
+<BR>
+<A NAME="regular_expr.ml:4884"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>fprint</FONT></I>&nbsp;<I><FONT COLOR=maroon>fmt</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;<I><FONT COLOR=maroon>r.</FONT></I><I><FONT COLOR=maroon>node</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Empty</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>fmt</FONT></I>&nbsp;<TT>"(empty)"</TT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Epsilon</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>fmt</FONT></I>&nbsp;<TT>"(epsilon)"</TT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Char_interv</FONT></I>(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>fmt</FONT></I>&nbsp;<TT>"['%c'-'%c']"</TT>&nbsp;(<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>chr</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>)&nbsp;(<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>chr</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>String</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>fmt</FONT></I>&nbsp;<TT>"\"%s\""</TT>&nbsp;<I><FONT COLOR=maroon>s</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Star</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>fmt</FONT></I>&nbsp;<TT>"(%a)*"</TT>&nbsp;<I><FONT COLOR=maroon>fprint</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Alt</FONT></I>(<I><FONT COLOR=maroon>l</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>fmt</FONT></I>&nbsp;<TT>"("</TT>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>Ptset.</FONT></I><I><FONT COLOR=maroon>iter</FONT></I>&nbsp;(<FONT COLOR=purple>fun</FONT>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>fmt</FONT></I>&nbsp;<TT>"|%a"</TT>&nbsp;<I><FONT COLOR=maroon>fprint</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>)&nbsp;<I><FONT COLOR=maroon>l</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>fmt</FONT></I>&nbsp;<TT>")"</TT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>Seq</FONT></I>(<I><FONT COLOR=maroon>e1</FONT></I>,<I><FONT COLOR=maroon>e2</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>fmt</FONT></I>&nbsp;<TT>"(%a&nbsp;%a)"</TT>&nbsp;<I><FONT COLOR=maroon>fprint</FONT></I>&nbsp;<I><FONT COLOR=maroon>e1</FONT></I>&nbsp;<I><FONT COLOR=maroon>fprint</FONT></I>&nbsp;<I><FONT COLOR=maroon>e2</FONT></I><BR><BR>
+<BR>
+<A NAME="regular_expr.ml:5343"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>print</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>fprint</FONT></I>&nbsp;<I><FONT COLOR=maroon>std_formatter</FONT></I><BR>
+<!--TOC section Module Regexp_parser (Yacc)-->
+
+<H2>Module Regexp_parser (Yacc)</H2><!--SEC END -->
+
+<A NAME="regexp_parser.mly:0"></A>
+<A NAME="regexp_parser.mly:4"></A>&nbsp;&nbsp;
+<FONT COLOR=purple>open</FONT>&nbsp;<I><FONT COLOR=maroon>Regular_expr</FONT></I><BR>
+<BR>
+<A NAME="regexp_parser.mly:27"></A>
+<BR>
+<BR>
+<A NAME="regexp_parser.mly:31"></A>
+<FONT COLOR=purple>%token</FONT>&nbsp;&lt;
+<I><FONT COLOR=maroon>char</FONT></I>
+&gt;&nbsp;<I><I>CHAR</I></I><BR>
+<FONT COLOR=purple>%token</FONT>&nbsp;&lt;
+<I><FONT COLOR=maroon>Regular_expr.</FONT></I><I><FONT COLOR=maroon>regexp</FONT></I>
+&gt;&nbsp;<I><I>CHARSET</I></I><BR>
+<FONT COLOR=purple>%token</FONT>&nbsp;<I><I>STAR</I></I>&nbsp;<I><I>ALT</I></I>&nbsp;<I><I>PLUS</I></I>&nbsp;<I><I>QUESTION</I></I>&nbsp;<I><I>OPENPAR</I></I>&nbsp;<I><I>CLOSEPAR</I></I>&nbsp;<I><I>EOF</I></I><BR>
+<BR>
+<A NAME="regexp_parser.mly:139"></A>
+<FONT COLOR=purple>%start</FONT>&nbsp;<I><I>regexp</I>_<I>start</I></I><BR>
+<FONT COLOR=purple>%type</FONT>&nbsp;&lt;
+<I><FONT COLOR=maroon>Regular_expr.</FONT></I><I><FONT COLOR=maroon>regexp</FONT></I>
+&gt;&nbsp;<I><I>regexp</I>_<I>start</I></I><BR>
+<BR>
+<A NAME="regexp_parser.mly:202"></A>
+<FONT COLOR=purple>%left</FONT>&nbsp;<I><I>ALT</I></I>&nbsp;<BR>
+<FONT COLOR=purple>%left</FONT>&nbsp;<I><I>CONCAT</I></I>&nbsp;<I><I>CHAR</I></I>&nbsp;<I><I>CHARSET</I></I>&nbsp;<I><I>OPENPAR</I></I><BR>
+<FONT COLOR=purple>%nonassoc</FONT>&nbsp;<I><I>STAR</I></I>&nbsp;<I><I>PLUS</I></I>&nbsp;<I><I>QUESTION</I></I><BR>
+<BR>
+<A NAME="regexp_parser.mly:277"></A>
+<BR>
+<BR>
+<A NAME="regexp_parser.mly:280"></A>
+<I><I>regexp</I>_<I>start</I></I>::=&nbsp;<BR>&nbsp;&nbsp;
+|&nbsp;<I><I>regexp</I></I>&nbsp;<I><I>EOF</I></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+$1&nbsp;
+}<BR>
+<BR>
+<BR>
+<A NAME="regexp_parser.mly:327"></A>
+<I><I>regexp</I></I>::=<BR>&nbsp;&nbsp;
+|&nbsp;<I><I>CHAR</I></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>char</FONT></I>&nbsp;$1&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<I><I>CHARSET</I></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+$1&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<I><I>regexp</I></I>&nbsp;<I><I>STAR</I></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>star</FONT></I>&nbsp;$1&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<I><I>regexp</I></I>&nbsp;<I><I>PLUS</I></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>some</FONT></I>&nbsp;$1&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<I><I>regexp</I></I>&nbsp;<I><I>QUESTION</I></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>opt</FONT></I>&nbsp;$1&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<I><I>regexp</I></I>&nbsp;<I><I>ALT</I></I>&nbsp;<I><I>regexp</I></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>alt</FONT></I>&nbsp;$1&nbsp;$3&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<I><I>regexp</I></I>&nbsp;<I><I>regexp</I></I>&nbsp;<FONT COLOR=purple>%prec</FONT>&nbsp;<I><I>CONCAT</I></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>seq</FONT></I>&nbsp;$1&nbsp;$2&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<I><I>OPENPAR</I></I>&nbsp;<I><I>regexp</I></I>&nbsp;<I><I>CLOSEPAR</I></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+$2&nbsp;
+}<BR>
+<BR><BR>
+<!--TOC section Module Regexp_lexer (Lex)-->
+
+<H2>Module Regexp_lexer (Lex)</H2><!--SEC END -->
+
+<A NAME="regexp_lexer.mll:0"></A><A NAME="regexp_lexer.mll:3"></A>
+{<BR>
+<BR>
+<A NAME="regexp_lexer.mll:6"></A>&nbsp;&nbsp;
+<FONT COLOR=purple>open</FONT>&nbsp;<I><FONT COLOR=maroon>Regular_expr</FONT></I><BR>
+<BR>
+<A NAME="regexp_lexer.mll:28"></A>&nbsp;&nbsp;
+<FONT COLOR=purple>open</FONT>&nbsp;<I><FONT COLOR=maroon>Regexp_parser</FONT></I><BR>
+<BR>
+<A NAME="regexp_lexer.mll:51"></A>&nbsp;&nbsp;
+<FONT COLOR=purple>open</FONT>&nbsp;<I><FONT COLOR=maroon>Lexing</FONT></I><BR>
+<BR>
+<A NAME="regexp_lexer.mll:68"></A>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>add_inter</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>add_rec</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;=&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;[&nbsp;]&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;[(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>)]<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;(<I><FONT COLOR=maroon>a1</FONT></I>,<I><FONT COLOR=maroon>b1</FONT></I>)::<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;&lt;&nbsp;<I><FONT COLOR=maroon>a1</FONT></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>then</FONT>&nbsp;(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>)::<I><FONT COLOR=maroon>l</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>b1</FONT></I>&nbsp;&lt;&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>then</FONT>&nbsp;(<I><FONT COLOR=maroon>a1</FONT></I>,<I><FONT COLOR=maroon>b1</FONT></I>)::(<I><FONT COLOR=maroon>add_rec</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(* intervals <I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I> and <I><FONT COLOR=maroon>a1</FONT></I>,<I><FONT COLOR=maroon>b1</FONT></I> intersect *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>add_rec</FONT></I>&nbsp;(<I><FONT COLOR=maroon>min</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>a1</FONT></I>)&nbsp;(<I><FONT COLOR=maroon>max</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<I><FONT COLOR=maroon>b1</FONT></I>)&nbsp;<I><FONT COLOR=maroon>r</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&gt;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;<FONT COLOR=purple>else</FONT>&nbsp;<I><FONT COLOR=maroon>add_rec</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<I><FONT COLOR=maroon>l</FONT></I><BR>
+<BR>
+<A NAME="regexp_lexer.mll:412"></A>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>complement</FONT></I>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>comp_rec</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;[&nbsp;]&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;&lt;&nbsp;256&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;[(<I><FONT COLOR=maroon>a</FONT></I>,255)]&nbsp;<FONT COLOR=purple>else</FONT>&nbsp;[&nbsp;]<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;(<I><FONT COLOR=maroon>a1</FONT></I>,<I><FONT COLOR=maroon>b1</FONT></I>)::<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;&lt;&nbsp;<I><FONT COLOR=maroon>a1</FONT></I>&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>a1</FONT></I>-1)::(<I><FONT COLOR=maroon>comp_rec</FONT></I>&nbsp;(<I><FONT COLOR=maroon>b1</FONT></I>+1)&nbsp;<I><FONT COLOR=maroon>r</FONT></I>)&nbsp;<FONT COLOR=purple>else</FONT>&nbsp;<I><FONT COLOR=maroon>comp_rec</FONT></I>&nbsp;(<I><FONT COLOR=maroon>b1</FONT></I>+1)&nbsp;<I><FONT COLOR=maroon>r</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>comp_rec</FONT></I>&nbsp;0&nbsp;<I><FONT COLOR=maroon>l</FONT></I><BR>
+<BR>
+<A NAME="regexp_lexer.mll:644"></A>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>interv</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>char_interv</FONT></I>&nbsp;(<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>chr</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>)&nbsp;(<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>chr</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>)<BR>
+<BR>
+<A NAME="regexp_lexer.mll:702"></A>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>make_charset</FONT></I>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;[&nbsp;]&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>empty</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>)::<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>alt</FONT></I>&nbsp;(<I><FONT COLOR=maroon>interv</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>)&nbsp;(<I><FONT COLOR=maroon>make_charset</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>)<BR>
+<BR>
+<A NAME="regexp_lexer.mll:821"></A>
+}<BR>
+<BR>
+<A NAME="regexp_lexer.mll:825"></A>
+<FONT COLOR=purple>rule</FONT>&nbsp;<I><I>token</I></I>&nbsp;=&nbsp;<FONT COLOR=purple>parse</FONT><BR>&nbsp;&nbsp;
+|&nbsp;<CODE>'\\'</CODE>&nbsp;<FONT SIZE=4>_&nbsp;</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>CHAR</FONT></I>&nbsp;(<I><FONT COLOR=maroon>lexeme_char</FONT></I>&nbsp;<I><FONT COLOR=maroon>lexbuf</FONT></I>&nbsp;1)&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<CODE>'.'</CODE>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>CHARSET</FONT></I>(<I><FONT COLOR=maroon>interv</FONT></I>&nbsp;0&nbsp;255)&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<CODE>'*'</CODE>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>STAR</FONT></I>&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<CODE>'+'</CODE>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>PLUS</FONT></I>&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<CODE>'?'</CODE>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>QUESTION</FONT></I>&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<CODE>'|'</CODE>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>ALT</FONT></I>&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<CODE>'('</CODE>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>OPENPAR</FONT></I>&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<CODE>')'</CODE>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>CLOSEPAR</FONT></I>&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<TT>"[^"</TT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>CHARSET</FONT></I>(<I><FONT COLOR=maroon>make_charset</FONT></I>&nbsp;(<I><FONT COLOR=maroon>complement</FONT></I>&nbsp;(<I><FONT COLOR=maroon>charset</FONT></I>&nbsp;<I><FONT COLOR=maroon>lexbuf</FONT></I>)))&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<CODE>'['</CODE>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>CHARSET</FONT></I>(<I><FONT COLOR=maroon>make_charset</FONT></I>&nbsp;(<I><FONT COLOR=maroon>charset</FONT></I>&nbsp;<I><FONT COLOR=maroon>lexbuf</FONT></I>))&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<FONT SIZE=4>_&nbsp;</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>CHAR</FONT></I>&nbsp;(<I><FONT COLOR=maroon>lexeme_char</FONT></I>&nbsp;<I><FONT COLOR=maroon>lexbuf</FONT></I>&nbsp;0)&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<FONT COLOR=purple>eof</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<I><FONT COLOR=maroon>EOF</FONT></I>&nbsp;
+}<BR>
+<BR>
+<A NAME="regexp_lexer.mll:1311"></A>
+<FONT COLOR=purple>and</FONT>&nbsp;<I><I>charset</I></I>&nbsp;=&nbsp;<FONT COLOR=purple>parse</FONT><BR>&nbsp;&nbsp;
+|&nbsp;<CODE>']'</CODE>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+[&nbsp;]&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<CODE>'\\'</CODE>&nbsp;<FONT SIZE=4>_&nbsp;</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>(<I><FONT COLOR=maroon>lexeme_char</FONT></I>&nbsp;<I><FONT COLOR=maroon>lexbuf</FONT></I>&nbsp;1)&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>add_inter</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;(<I><FONT COLOR=maroon>charset</FONT></I>&nbsp;<I><FONT COLOR=maroon>lexbuf</FONT></I>)&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;[^&nbsp;<CODE>'\\'</CODE>]&nbsp;<CODE>'-'</CODE>&nbsp;<FONT SIZE=4>_&nbsp;</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>c1</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>&nbsp;(<I><FONT COLOR=maroon>lexeme_char</FONT></I>&nbsp;<I><FONT COLOR=maroon>lexbuf</FONT></I>&nbsp;0)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>and</FONT>&nbsp;<I><FONT COLOR=maroon>c2</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>&nbsp;(<I><FONT COLOR=maroon>lexeme_char</FONT></I>&nbsp;<I><FONT COLOR=maroon>lexbuf</FONT></I>&nbsp;2)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>add_inter</FONT></I>&nbsp;<I><FONT COLOR=maroon>c1</FONT></I>&nbsp;<I><FONT COLOR=maroon>c2</FONT></I>&nbsp;(<I><FONT COLOR=maroon>charset</FONT></I>&nbsp;<I><FONT COLOR=maroon>lexbuf</FONT></I>)&nbsp;
+}<BR>&nbsp;&nbsp;
+|&nbsp;<FONT SIZE=4>_&nbsp;</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>(<I><FONT COLOR=maroon>lexeme_char</FONT></I>&nbsp;<I><FONT COLOR=maroon>lexbuf</FONT></I>&nbsp;0)&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>add_inter</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;(<I><FONT COLOR=maroon>charset</FONT></I>&nbsp;<I><FONT COLOR=maroon>lexbuf</FONT></I>)&nbsp;
+}<BR>
+<!--TOC section Module <I><FONT COLOR=maroon>Regexp_syntax</FONT></I>-->
+
+<H2>3.4&nbsp;&nbsp; Module <I><FONT COLOR=maroon>Regexp_syntax</FONT></I></H2><!--SEC END -->
+
+<A NAME="regexp_syntax.mli:0"></A>This module offers a way of building regular expressions
+ syntactically, following more or less the GNU regexp syntax as in
+ egrep. This is summarized in the table of figure&nbsp;<A HREF="#figure:regexpsyntax">3.1</A>.<BR>
+<BR>
+<BLOCKQUOTE><DIV ALIGN=center><HR WIDTH="80%" SIZE=2></DIV>
+<DIV ALIGN=center>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=1>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><I><FONT COLOR=maroon>char</FONT></I></TD>
+<TD VALIGN=top ALIGN=left>denotes the character <I><FONT COLOR=maroon>char</FONT></I> for all non-special chars</TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><CODE>\</CODE><I><FONT COLOR=maroon>char</FONT></I></TD>
+<TD VALIGN=top ALIGN=left>denotes the character <I><FONT COLOR=maroon>char</FONT></I> for special characters <CODE>.</CODE>, <CODE>\</CODE>, <CODE>*</CODE>, <CODE>+</CODE>, <CODE>?</CODE>, <CODE>|</CODE>, <CODE>[</CODE>, 
+<CODE>]</CODE>, <CODE>(</CODE> and <CODE>)</CODE></TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><CODE>.</CODE></TD>
+<TD VALIGN=top ALIGN=left>denotes any single-character word</TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><CODE>[</CODE><I><FONT COLOR=maroon>set</FONT></I><CODE>]</CODE></TD>
+<TD VALIGN=top ALIGN=left>denotes any single-character word belonging to <I><FONT COLOR=maroon>set</FONT></I>. Intervals may be given as in <CODE>[a-z]</CODE>.</TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><CODE>[^</CODE><I><FONT COLOR=maroon>set</FONT></I><CODE>]</CODE></TD>
+<TD VALIGN=top ALIGN=left>denotes any single-character word not belonging to <I><FONT COLOR=maroon>set</FONT></I>.</TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><I><FONT COLOR=maroon>regexp</FONT></I><CODE>*</CODE></TD>
+<TD VALIGN=top ALIGN=left>denotes the Kleene star of <I><FONT COLOR=maroon>regexp</FONT></I></TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><I><FONT COLOR=maroon>regexp</FONT></I><CODE>+</CODE></TD>
+<TD VALIGN=top ALIGN=left>denotes any concatenation of one or more words of <I><FONT COLOR=maroon>regexp</FONT></I></TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><I><FONT COLOR=maroon>regexp</FONT></I><CODE>?</CODE></TD>
+<TD VALIGN=top ALIGN=left>denotes the empty word or any word denoted by <I><FONT COLOR=maroon>regexp</FONT></I></TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>1</FONT></FONT></I></SUB><CODE>|</CODE><I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>2</FONT></FONT></I></SUB></TD>
+<TD VALIGN=top ALIGN=left>denotes any words in <I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>1</FONT></FONT></I></SUB> or in <I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>2</FONT></FONT></I></SUB></TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>1</FONT></FONT></I></SUB><I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>2</FONT></FONT></I></SUB></TD>
+<TD VALIGN=top ALIGN=left>denotes any contecatenation of a word of <I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>1</FONT></FONT></I></SUB> and a word of <I><FONT COLOR=maroon>regexp</FONT></I><SUB><I><FONT COLOR=maroon><FONT SIZE=2>2</FONT></FONT></I></SUB></TD>
+</TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><CODE>(</CODE><I><FONT COLOR=maroon>regexp</FONT></I><CODE>)</CODE></TD>
+<TD VALIGN=top ALIGN=left>parentheses, denotes the same words as <I><FONT COLOR=maroon>regexp</FONT></I>.</TD>
+</TR></TABLE>
+</DIV>
+<BR>
+<DIV ALIGN=center>Figure 3.1: Syntax of regular expressions</DIV><BR>
+
+<A NAME="figure:regexpsyntax"></A>
+<DIV ALIGN=center><HR WIDTH="80%" SIZE=2></DIV></BLOCKQUOTE> Moreover, the postfix operators <CODE>*</CODE>, <CODE>+</CODE> and <CODE>?</CODE> have priority over the concatenation, itself having priority over alternation with <CODE>|</CODE><BR>
+<BR>
+ <I><FONT COLOR=maroon>from_string</FONT></I>&nbsp;<I><FONT COLOR=maroon>str</FONT></I> builds a regexp by interpreting syntactically the
+ string <I><FONT COLOR=maroon>str</FONT></I>. The syntax must follow the table above. It raises
+ exception <I><FONT COLOR=maroon>Invalid_argument</FONT></I>&nbsp;<TT>"from_string"</TT> if the syntax is not
+ correct.<BR>
+<BR>
+<BR><A NAME="regexp_syntax.mli:2027"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>from_string</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>Regular_expr.</FONT></I><I><FONT COLOR=maroon>regexp</FONT></I><BR>
+<!--TOC section Implementation of module <I><FONT COLOR=maroon>Regexp_syntax</FONT></I>-->
+
+<H2>3.5&nbsp;&nbsp; Implementation of module <I><FONT COLOR=maroon>Regexp_syntax</FONT></I></H2><!--SEC END -->
+
+<A NAME="regexp_syntax.ml:0"></A><A NAME="regexp_syntax.ml:4"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>from_string</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>try</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Lexing.</FONT></I><I><FONT COLOR=maroon>from_string</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>Regexp_parser.</FONT></I><I><FONT COLOR=maroon>regexp_start</FONT></I>&nbsp;<I><FONT COLOR=maroon>Regexp_lexer.</FONT></I><I><FONT COLOR=maroon>token</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>Parsing.Parse_error</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>invalid_arg</FONT></I>&nbsp;<TT>"from_string"</TT><BR><BR>
+<!--TOC section Module <I><FONT COLOR=maroon>Automata</FONT></I>-->
+
+<H2>3.6&nbsp;&nbsp; Module <I><FONT COLOR=maroon>Automata</FONT></I></H2><!--SEC END -->
+
+<A NAME="automata.mli:0"></A>This module provides compilation of a regexp into an automaton. It
+ then provides some functions for matching and searching.<BR>
+<BR>
+<BR><!--TOC subsection Automata, compilation-->
+
+<H3>3.6.1&nbsp;&nbsp; Automata, compilation</H3><!--SEC END -->
+ Automata considered here are deterministic. The type of automata is
+ abstract. <I><FONT COLOR=maroon>compile</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I> returns an automaton that recognizes the
+ language of <I><FONT COLOR=maroon>r</FONT></I>.<BR>
+<BR>
+<BR><A NAME="automata.mli:341"></A>
+<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>automaton</FONT></I><BR>
+<BR>
+<A NAME="automata.mli:359"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>compile</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>Regular_expr.</FONT></I><I><FONT COLOR=maroon>regexp</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>automaton</FONT></I><BR>
+<BR>
+<!--TOC subsection Execution of automata-->
+
+<H3>3.6.2&nbsp;&nbsp; Execution of automata</H3><!--SEC END -->
+<BR><I><FONT COLOR=maroon>exec_automaton</FONT></I>&nbsp;<I><FONT COLOR=maroon>auto</FONT></I>&nbsp;<I><FONT COLOR=maroon>str</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I> executes the automaton <I><FONT COLOR=maroon>auto</FONT></I> on
+ string <I><FONT COLOR=maroon>str</FONT></I> starting at position <I><FONT COLOR=maroon>pos</FONT></I>. Returns the maximal
+ position <I><FONT COLOR=maroon>p</FONT></I> such that the substring of <I><FONT COLOR=maroon>str</FONT></I> from positions <I><FONT COLOR=maroon>pos</FONT></I>
+ (included) to <I><FONT COLOR=maroon>p</FONT></I> (excluded) is acceptable by the automaton, -1 if
+ no such position exists.<BR>
+<BR>
+ Unpredictable results may occur if <I><FONT COLOR=maroon>pos</FONT></I>&nbsp;&lt;&nbsp;0.<BR>
+<BR>
+<BR><A NAME="automata.mli:811"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>exec_automaton</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>automaton</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>int</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>int</FONT></I><BR>
+<BR>
+<!--TOC subsection Matching and searching functions-->
+
+<H3>3.6.3&nbsp;&nbsp; Matching and searching functions</H3><!--SEC END -->
+<BR><I><FONT COLOR=maroon>search_forward</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>str</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I> search in the string <I><FONT COLOR=maroon>str</FONT></I>, starting at
+ position <I><FONT COLOR=maroon>pos</FONT></I> a word that is in the language of automaton
+ <I><FONT COLOR=maroon>a</FONT></I>. Returns a pair (<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>e</FONT></I>) where <I><FONT COLOR=maroon>b</FONT></I> is position of the first char
+ matched, and <I><FONT COLOR=maroon>e</FONT></I> is the position following the position of the last
+ char matched.<BR>
+<BR>
+ Raises <I><FONT COLOR=maroon>Not_found</FONT></I> of no matching word is found.<BR>
+<BR>
+ Notice: even if the automaton accepts the empty word, this function
+ will never return (<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>e</FONT></I>) with <I><FONT COLOR=maroon>e</FONT></I>=<I><FONT COLOR=maroon>b</FONT></I>. In other words, this function
+ always search for non-empty words in the language of automaton <I><FONT COLOR=maroon>a</FONT></I>.<BR>
+<BR>
+ Unpredictable results may occur if <I><FONT COLOR=maroon>pos</FONT></I>&nbsp;&lt;&nbsp;0.<BR>
+<BR>
+<BR><A NAME="automata.mli:1535"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>search_forward</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>automaton</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>int</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>int</FONT></I>&nbsp;×&nbsp;<I><FONT COLOR=maroon>int</FONT></I><BR>
+<BR>
+<I><FONT COLOR=maroon>split_strings</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I> extract from string <I><FONT COLOR=maroon>s</FONT></I> the subwords (of maximal
+ size) that are in the language of <I><FONT COLOR=maroon>a</FONT></I>. For example <I><FONT COLOR=maroon>split_strings</FONT></I>
+&nbsp;(<I><FONT COLOR=maroon>compile</FONT></I>&nbsp;(<I><FONT COLOR=maroon>from_string</FONT></I>&nbsp;<TT>"[0-9]+"</TT>))&nbsp;<TT>"12+3*45"</TT> returns
+ [<TT>"12"</TT>;<TT>"3"</TT>;<TT>"45"</TT>].<BR>
+<BR>
+ <I><FONT COLOR=maroon>split_delim</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I> splits string <I><FONT COLOR=maroon>s</FONT></I> into pieces delimited by
+ <I><FONT COLOR=maroon>a</FONT></I>. For example <I><FONT COLOR=maroon>split_strings</FONT></I>&nbsp;(<I><FONT COLOR=maroon>compile</FONT></I>&nbsp;(<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<CODE>':'</CODE>))
+&nbsp;<TT>"marche:G6H3a656h6g56:534:180:Claude&nbsp;Marche:/home/marche:/bin/bash"</TT>
+ returns [&nbsp;<TT>"marche"</TT>&nbsp;;&nbsp;<TT>"G6H3a656h6g56"</TT>&nbsp;;&nbsp;<TT>"534"</TT>&nbsp;;&nbsp;<TT>"180"</TT>&nbsp;;&nbsp;<TT>"Claude&nbsp;&nbsp;Marche"</TT>&nbsp;;&nbsp;<TT>"/home/marche"</TT>&nbsp;;&nbsp;<TT>"/bin/bash"</TT>].<BR>
+<BR>
+<BR><A NAME="automata.mli:2123"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>split_strings</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>automaton</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<I><FONT COLOR=maroon>list</FONT></I><BR>
+<BR>
+<A NAME="automata.mli:2180"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>split_delim</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>automaton</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<I><FONT COLOR=maroon>list</FONT></I><BR>
+<BR>
+<I><FONT COLOR=maroon>to_dot</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>f</FONT></I> exports the automaton <I><FONT COLOR=maroon>a</FONT></I> to the file <I><FONT COLOR=maroon>f</FONT></I> in DOT format.<BR>
+<BR>
+<BR><A NAME="automata.mli:2318"></A>
+<FONT COLOR=purple>val</FONT>&nbsp;<I><FONT COLOR=maroon>to_dot</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>automaton</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>string</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>unit</FONT></I><BR>
+<!--TOC section Implementation of module <I><FONT COLOR=maroon>Automata</FONT></I>-->
+
+<H2>3.7&nbsp;&nbsp; Implementation of module <I><FONT COLOR=maroon>Automata</FONT></I></H2><!--SEC END -->
+
+<A NAME="automata.ml:0"></A>Compilation of regexp into an automaton<BR>
+<BR>
+<BR><A NAME="automata.ml:52"></A>
+<FONT COLOR=purple>open</FONT>&nbsp;<I><FONT COLOR=maroon>Regular_expr</FONT></I><BR>
+<BR>
+<!--TOC subsection The type of automata-->
+
+<H3>3.7.1&nbsp;&nbsp; The type of automata</H3><!--SEC END -->
+ Automata considered here are deterministic.<BR>
+<BR>
+ The states of these automata are always represented as natural
+ numbers, the initial state always being 0.<BR>
+<BR>
+ An automaton is then made of a transition table, giving for each
+ state <I>n</I> a sparse array that maps characters codes to states ; and
+ a table of accepting states.<BR>
+<BR>
+<BR><A NAME="automata.ml:449"></A>
+<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>automaton</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+{<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>auto_trans</FONT></I>&nbsp;:&nbsp;(<I><FONT COLOR=maroon>int</FONT></I>&nbsp;×&nbsp;<I><FONT COLOR=maroon>int</FONT></I>&nbsp;<I><FONT COLOR=maroon>array</FONT></I>)&nbsp;<I><FONT COLOR=maroon>array</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>auto_accept</FONT></I>&nbsp;:&nbsp;<I><FONT COLOR=maroon>bool</FONT></I>&nbsp;<I><FONT COLOR=maroon>array</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+}<BR><BR>
+<BR>
+<!--TOC subsection Execution of automata-->
+
+<H3>3.7.2&nbsp;&nbsp; Execution of automata</H3><!--SEC END -->
+<BR><I><FONT COLOR=maroon>exec_automaton</FONT></I>&nbsp;<I><FONT COLOR=maroon>auto</FONT></I>&nbsp;<I><FONT COLOR=maroon>str</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I> executes the automaton <I><FONT COLOR=maroon>auto</FONT></I> on
+ string <I><FONT COLOR=maroon>str</FONT></I> starting at position <I><FONT COLOR=maroon>pos</FONT></I>. Returns the maximal
+ position <I><FONT COLOR=maroon>p</FONT></I> such that the substring of <I><FONT COLOR=maroon>str</FONT></I> from positions <I><FONT COLOR=maroon>pos</FONT></I>
+ (included) to <I><FONT COLOR=maroon>p</FONT></I> (excluded) is acceptable by the automaton, -1 if
+ no such position exists.<BR>
+<BR>
+<BR><A NAME="automata.ml:908"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>exec_automaton</FONT></I>&nbsp;<I><FONT COLOR=maroon>auto</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>state</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>ref</FONT></I>&nbsp;0&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>and</FONT>&nbsp;<I><FONT COLOR=maroon>last_accept_pos</FONT></I>&nbsp;=&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>ref</FONT></I>&nbsp;(<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>auto.</FONT></I><I><FONT COLOR=maroon>auto_accept</FONT></I>.(0)&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>&nbsp;<FONT COLOR=purple>else</FONT>&nbsp;-1)<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>and</FONT>&nbsp;<I><FONT COLOR=maroon>i</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>ref</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>and</FONT>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>length</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>try</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>while</FONT>&nbsp;!<I><FONT COLOR=maroon>i</FONT></I>&nbsp;&lt;&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;<FONT COLOR=purple>do</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;(<I><FONT COLOR=maroon>offset</FONT></I>,<I><FONT COLOR=maroon>m</FONT></I>)&nbsp;=&nbsp;<I><FONT COLOR=maroon>auto.</FONT></I><I><FONT COLOR=maroon>auto_trans</FONT></I>.(!<I><FONT COLOR=maroon>state</FONT></I>)&nbsp;<FONT COLOR=purple>in</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>index</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>(<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>get</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;!<I><FONT COLOR=maroon>i</FONT></I>)-<I><FONT COLOR=maroon>offset</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>index</FONT></I>&nbsp;&lt;0&nbsp;<FONT COLOR=purple>or</FONT>&nbsp;<I><FONT COLOR=maroon>index</FONT></I>&nbsp;<FONT FACE=symbol>³</FONT>&nbsp;<I><FONT COLOR=maroon>Array.</FONT></I><I><FONT COLOR=maroon>length</FONT></I>&nbsp;<I><FONT COLOR=maroon>m</FONT></I>&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>raise</FONT></I>&nbsp;<I><FONT COLOR=maroon>Exit</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>state</FONT></I>&nbsp;:=&nbsp;<I><FONT COLOR=maroon>m</FONT></I>.(<I><FONT COLOR=maroon>index</FONT></I>);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;!<I><FONT COLOR=maroon>state</FONT></I>&nbsp;=&nbsp;-1&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>raise</FONT></I>&nbsp;<I><FONT COLOR=maroon>Exit</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>incr</FONT></I>&nbsp;<I><FONT COLOR=maroon>i</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>auto.</FONT></I><I><FONT COLOR=maroon>auto_accept</FONT></I>.(!<I><FONT COLOR=maroon>state</FONT></I>)&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>last_accept_pos</FONT></I>&nbsp;:=&nbsp;!<I><FONT COLOR=maroon>i</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>done</FONT>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+!<I><FONT COLOR=maroon>last_accept_pos</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>Exit</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;!<I><FONT COLOR=maroon>last_accept_pos</FONT></I>;<BR><BR>
+<BR>
+<!--TOC subsection Searching functions-->
+
+<H3>3.7.3&nbsp;&nbsp; Searching functions</H3><!--SEC END -->
+<BR><I><FONT COLOR=maroon>search_forward</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>str</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I> search in the string <I><FONT COLOR=maroon>str</FONT></I>, starting at
+ position <I><FONT COLOR=maroon>pos</FONT></I> a word that is in the language of automaton
+ <I><FONT COLOR=maroon>a</FONT></I>. Returns a pair (<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>e</FONT></I>) where <I><FONT COLOR=maroon>b</FONT></I> is position of the first char
+ matched, and <I><FONT COLOR=maroon>e</FONT></I> is the position following the position of the last
+ char matched.<BR>
+<BR>
+ Raises <I><FONT COLOR=maroon>Not_found</FONT></I> of no matching word is found.<BR>
+<BR>
+ Notice: even if the automaton accepts the empty word, this function
+ will never return (<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>e</FONT></I>) with <I><FONT COLOR=maroon>e</FONT></I>=<I><FONT COLOR=maroon>b</FONT></I>. In other words, this function
+ always search for non-empty words in the language of automaton <I><FONT COLOR=maroon>a</FONT></I>.<BR>
+<BR>
+ Unpredictable results may occur if <I><FONT COLOR=maroon>pos</FONT></I>&nbsp;&lt;&nbsp;0.<BR>
+<BR>
+<BR><A NAME="automata.ml:2134"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>search_forward</FONT></I>&nbsp;<I><FONT COLOR=maroon>auto</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>&nbsp;<FONT FACE=symbol>³</FONT>&nbsp;<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>length</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>raise</FONT></I>&nbsp;<I><FONT COLOR=maroon>Not_found</FONT></I><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>n</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>exec_automaton</FONT></I>&nbsp;<I><FONT COLOR=maroon>auto</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>n</FONT></I>&nbsp;&gt;&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>,<I><FONT COLOR=maroon>n</FONT></I>&nbsp;<FONT COLOR=purple>else</FONT>&nbsp;<I><FONT COLOR=maroon>search_forward</FONT></I>&nbsp;<I><FONT COLOR=maroon>auto</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;(<I><FONT COLOR=maroon>succ</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>)<BR><BR>
+<BR>
+<I><FONT COLOR=maroon>split_strings</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I> extract from string <I><FONT COLOR=maroon>s</FONT></I> the subwords (of maximal
+ size) that are in the language of <I><FONT COLOR=maroon>a</FONT></I><BR>
+<BR>
+<BR><A NAME="automata.ml:2461"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>split_strings</FONT></I>&nbsp;<I><FONT COLOR=maroon>auto</FONT></I>&nbsp;<I><FONT COLOR=maroon>line</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>loop</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>try</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>e</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>search_forward</FONT></I>&nbsp;<I><FONT COLOR=maroon>auto</FONT></I>&nbsp;<I><FONT COLOR=maroon>line</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>id</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>sub</FONT></I>&nbsp;<I><FONT COLOR=maroon>line</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;(<I><FONT COLOR=maroon>e</FONT></I>-<I><FONT COLOR=maroon>b</FONT></I>)&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>id</FONT></I>::(<I><FONT COLOR=maroon>loop</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>with</FONT>&nbsp;<I><FONT COLOR=maroon>Not_found</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;[&nbsp;]<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>loop</FONT></I>&nbsp;0<BR><BR>
+<BR>
+<A NAME="automata.ml:2673"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>split_delim</FONT></I>&nbsp;<I><FONT COLOR=maroon>auto</FONT></I>&nbsp;<I><FONT COLOR=maroon>line</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>loop</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>try</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>e</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>search_forward</FONT></I>&nbsp;<I><FONT COLOR=maroon>auto</FONT></I>&nbsp;<I><FONT COLOR=maroon>line</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>id</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>sub</FONT></I>&nbsp;<I><FONT COLOR=maroon>line</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>&nbsp;(<I><FONT COLOR=maroon>b</FONT></I>-<I><FONT COLOR=maroon>pos</FONT></I>)&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>id</FONT></I>::(<I><FONT COLOR=maroon>loop</FONT></I>&nbsp;<I><FONT COLOR=maroon>e</FONT></I>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>with</FONT>&nbsp;<I><FONT COLOR=maroon>Not_found</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>sub</FONT></I>&nbsp;<I><FONT COLOR=maroon>line</FONT></I>&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>&nbsp;(<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>length</FONT></I>&nbsp;<I><FONT COLOR=maroon>line</FONT></I>&nbsp;-&nbsp;<I><FONT COLOR=maroon>pos</FONT></I>)]<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>loop</FONT></I>&nbsp;0<BR><BR>
+<BR>
+<!--TOC subsection Compilation of a regexp-->
+
+<H3>3.7.4&nbsp;&nbsp; Compilation of a regexp</H3><!--SEC END -->
+ <I><FONT COLOR=maroon>compile</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I> returns an automaton that recognizes the language of <I><FONT COLOR=maroon>r</FONT></I>.<BR>
+<BR>
+<BR><A NAME="automata.ml:3062"></A>
+<FONT COLOR=purple>module</FONT>&nbsp;<I><FONT COLOR=maroon>IntMap</FONT></I>&nbsp;=&nbsp;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>Inttagmap.Make</FONT></I>(<FONT COLOR=purple>struct</FONT>&nbsp;<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>t</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>int</FONT></I>&nbsp;<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>tag</FONT></I>&nbsp;<I><FONT COLOR=maroon>x</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>x</FONT></I>&nbsp;<FONT COLOR=purple>end</FONT>)<BR>
+<BR>
+<A NAME="automata.ml:3138"></A>
+<FONT COLOR=purple>module</FONT>&nbsp;<I><FONT COLOR=maroon>IntSet</FONT></I>&nbsp;=&nbsp;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>Inttagset.Make</FONT></I>(<FONT COLOR=purple>struct</FONT>&nbsp;<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>t</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>int</FONT></I>&nbsp;<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>tag</FONT></I>&nbsp;<I><FONT COLOR=maroon>x</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>x</FONT></I>&nbsp;<FONT COLOR=purple>end</FONT>)<BR>
+<BR>
+<A NAME="automata.ml:3214"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>compute_max</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;<I><FONT COLOR=maroon>l</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;[&nbsp;]&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>b</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;(<I><FONT COLOR=maroon>_</FONT></I>,<I><FONT COLOR=maroon>x</FONT></I>,<I><FONT COLOR=maroon>_</FONT></I>)::<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>compute_max</FONT></I>&nbsp;<I><FONT COLOR=maroon>x</FONT></I>&nbsp;<I><FONT COLOR=maroon>l</FONT></I><BR>
+<BR>
+<A NAME="automata.ml:3306"></A>
+<FONT COLOR=purple>module</FONT>&nbsp;<I><FONT COLOR=maroon>HashRegexp</FONT></I>&nbsp;=&nbsp;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>Hashtbl.Make</FONT></I>(<FONT COLOR=purple>struct</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>t</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Regular_expr.</FONT></I><I><FONT COLOR=maroon>regexp</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>equal</FONT></I>&nbsp;=&nbsp;(<FONT FACE=symbol>º</FONT>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>hash</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Regular_expr.</FONT></I><I><FONT COLOR=maroon>uniq_tag</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>end</FONT>)<BR><BR>
+<BR>
+<A NAME="automata.ml:3462"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>compile</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;=<BR>
+<BR>
+we have a hash table to avoid several compilation of the same regexp 
+<BR><A NAME="automata.ml:3558"></A>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>hashtable</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>HashRegexp.</FONT></I><I><FONT COLOR=maroon>create</FONT></I>&nbsp;257<BR>
+<BR>
+<I><FONT COLOR=maroon>transtable</FONT></I> is the transition table to fill, and <I><FONT COLOR=maroon>acceptable</FONT></I> is
+ the table of accepting states. <I><FONT COLOR=maroon>transtable</FONT></I> maps any state into a
+ <I><FONT COLOR=maroon>CharMap</FONT></I>.<I><FONT COLOR=maroon>t</FONT></I>, which itself maps characters to states. 
+<BR><A NAME="automata.ml:3809"></A>&nbsp;&nbsp;
+<FONT COLOR=purple>and</FONT>&nbsp;<I><FONT COLOR=maroon>transtable</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>ref</FONT></I>&nbsp;<I><FONT COLOR=maroon>IntMap.</FONT></I><I><FONT COLOR=maroon>empty</FONT></I><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>and</FONT>&nbsp;<I><FONT COLOR=maroon>acceptable</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>ref</FONT></I>&nbsp;<I><FONT COLOR=maroon>IntSet.</FONT></I><I><FONT COLOR=maroon>empty</FONT></I><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>and</FONT>&nbsp;<I><FONT COLOR=maroon>next_state</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>ref</FONT></I>&nbsp;0<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>in</FONT><BR>
+<BR>
+<I><FONT COLOR=maroon>loop</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I> fills the tables for the regexp <I><FONT COLOR=maroon>r</FONT></I>, and return the 
+ initial state of the resulting automaton. 
+<BR><A NAME="automata.ml:4031"></A>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>loop</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>try</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>HashRegexp.</FONT></I><I><FONT COLOR=maroon>find</FONT></I>&nbsp;<I><FONT COLOR=maroon>hashtable</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>Not_found</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(* generate a new state *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>init</FONT></I>&nbsp;=&nbsp;!<I><FONT COLOR=maroon>next_state</FONT></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>and</FONT>&nbsp;<I><FONT COLOR=maroon>next_chars</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Regular_expr.</FONT></I><I><FONT COLOR=maroon>firstchars</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>incr</FONT></I>&nbsp;<I><FONT COLOR=maroon>next_state</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(* fill the hash table before recursion *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>HashRegexp.</FONT></I><I><FONT COLOR=maroon>add</FONT></I>&nbsp;<I><FONT COLOR=maroon>hashtable</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<I><FONT COLOR=maroon>init</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(* fill the set of acceptable states *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>nullable</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>acceptable</FONT></I>&nbsp;:=&nbsp;<I><FONT COLOR=maroon>IntSet.</FONT></I><I><FONT COLOR=maroon>add</FONT></I>&nbsp;<I><FONT COLOR=maroon>init</FONT></I>&nbsp;!<I><FONT COLOR=maroon>acceptable</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(* compute the map from chars to states for the new state *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>t</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>build_sparse_array</FONT></I>&nbsp;<I><FONT COLOR=maroon>next_chars</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(* add it to the transition table *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>transtable</FONT></I>&nbsp;:=&nbsp;<I><FONT COLOR=maroon>IntMap.</FONT></I><I><FONT COLOR=maroon>add</FONT></I>&nbsp;<I><FONT COLOR=maroon>init</FONT></I>&nbsp;<I><FONT COLOR=maroon>t</FONT></I>&nbsp;!<I><FONT COLOR=maroon>transtable</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(* return the new state *)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>init</FONT></I><BR>
+<BR>
+<A NAME="automata.ml:4670"></A>&nbsp;&nbsp;
+<FONT COLOR=purple>and</FONT>&nbsp;<I><FONT COLOR=maroon>build_sparse_array</FONT></I>&nbsp;<I><FONT COLOR=maroon>next_chars</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>match</FONT>&nbsp;<I><FONT COLOR=maroon>next_chars</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;[&nbsp;]&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;(0,[||])<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>_</FONT></I>)::<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>mini</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>and</FONT>&nbsp;<I><FONT COLOR=maroon>maxi</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>List.</FONT></I><I><FONT COLOR=maroon>fold_left</FONT></I>&nbsp;(<FONT COLOR=purple>fun</FONT>&nbsp;<I><FONT COLOR=maroon>_</FONT></I>&nbsp;(<I><FONT COLOR=maroon>_</FONT></I>,<I><FONT COLOR=maroon>x</FONT></I>,<I><FONT COLOR=maroon>_</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>x</FONT></I>)&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>t</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Array.</FONT></I><I><FONT COLOR=maroon>create</FONT></I>&nbsp;(<I><FONT COLOR=maroon>maxi</FONT></I>-<I><FONT COLOR=maroon>mini</FONT></I>+1)&nbsp;(-1)&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>List.</FONT></I><I><FONT COLOR=maroon>iter</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(<FONT COLOR=purple>fun</FONT>&nbsp;(<I><FONT COLOR=maroon>a</FONT></I>,<I><FONT COLOR=maroon>b</FONT></I>,<I><FONT COLOR=maroon>r</FONT></I>)&nbsp;<FONT FACE=symbol>®</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>loop</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>for</FONT>&nbsp;<I><FONT COLOR=maroon>i</FONT></I>=<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<FONT COLOR=purple>to</FONT>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<FONT COLOR=purple>do</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>t</FONT></I>.(<I><FONT COLOR=maroon>i</FONT></I>-<I><FONT COLOR=maroon>mini</FONT></I>)&nbsp;<FONT FACE=symbol>¬</FONT>&nbsp;<I><FONT COLOR=maroon>s</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>done</FONT>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>next_chars</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(<I><FONT COLOR=maroon>mini</FONT></I>,<I><FONT COLOR=maroon>t</FONT></I>)<BR>
+<BR>
+<A NAME="automata.ml:5052"></A>&nbsp;&nbsp;
+<FONT COLOR=purple>in</FONT>&nbsp;<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>_</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>loop</FONT></I>&nbsp;<I><FONT COLOR=maroon>r</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>
+<BR>
+we then fill the arrays defining the automaton 
+<BR><A NAME="automata.ml:5134"></A>&nbsp;&nbsp;
+{&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>auto_trans</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Array.</FONT></I><I><FONT COLOR=maroon>init</FONT></I>&nbsp;!<I><FONT COLOR=maroon>next_state</FONT></I>&nbsp;(<FONT COLOR=purple>fun</FONT>&nbsp;<I><FONT COLOR=maroon>i</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>IntMap.</FONT></I><I><FONT COLOR=maroon>find</FONT></I>&nbsp;<I><FONT COLOR=maroon>i</FONT></I>&nbsp;!<I><FONT COLOR=maroon>transtable</FONT></I>);<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>auto_accept</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Array.</FONT></I><I><FONT COLOR=maroon>init</FONT></I>&nbsp;!<I><FONT COLOR=maroon>next_state</FONT></I>&nbsp;(<FONT COLOR=purple>fun</FONT>&nbsp;<I><FONT COLOR=maroon>i</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>IntSet.</FONT></I><I><FONT COLOR=maroon>mem</FONT></I>&nbsp;<I><FONT COLOR=maroon>i</FONT></I>&nbsp;!<I><FONT COLOR=maroon>acceptable</FONT></I>);<BR>&nbsp;&nbsp;
+}<BR><BR>
+<BR>
+<!--TOC subsection Output functions-->
+
+<H3>3.7.5&nbsp;&nbsp; Output functions</H3><!--SEC END -->
+<BR><I><FONT COLOR=maroon>to_dot</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>f</FONT></I> exports the automaton <I><FONT COLOR=maroon>a</FONT></I> to the file <I><FONT COLOR=maroon>f</FONT></I> in DOT format.<BR>
+<BR>
+<BR><A NAME="automata.ml:5425"></A>
+<FONT COLOR=purple>open</FONT>&nbsp;<I><FONT COLOR=maroon>Printf</FONT></I><BR>
+<BR>
+<A NAME="automata.ml:5438"></A>
+<FONT COLOR=purple>module</FONT>&nbsp;<I><FONT COLOR=maroon>CharSet</FONT></I>&nbsp;=&nbsp;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>Set.Make</FONT></I>(<FONT COLOR=purple>struct</FONT>&nbsp;<FONT COLOR=purple>type</FONT>&nbsp;<I><FONT COLOR=maroon>t</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>compare</FONT></I>&nbsp;(<I><FONT COLOR=maroon>x</FONT></I>:<I><FONT COLOR=maroon>char</FONT></I>)&nbsp;(<I><FONT COLOR=maroon>y</FONT></I>:<I><FONT COLOR=maroon>char</FONT></I>)&nbsp;=&nbsp;<I><FONT COLOR=maroon>compare</FONT></I>&nbsp;<I><FONT COLOR=maroon>x</FONT></I>&nbsp;<I><FONT COLOR=maroon>y</FONT></I>&nbsp;<FONT COLOR=purple>end</FONT>)<BR>
+<BR>
+<A NAME="automata.ml:5540"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>no_chars</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>CharSet.</FONT></I><I><FONT COLOR=maroon>empty</FONT></I><BR>
+<BR>
+<A NAME="automata.ml:5572"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>char_interval</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;&gt;&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>no_chars</FONT></I><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT>&nbsp;<I><FONT COLOR=maroon>CharSet.</FONT></I><I><FONT COLOR=maroon>add</FONT></I>&nbsp;(<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>chr</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>)&nbsp;(<I><FONT COLOR=maroon>char_interval</FONT></I>&nbsp;(<I><FONT COLOR=maroon>succ</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>)&nbsp;<I><FONT COLOR=maroon>b</FONT></I>)<BR>
+<BR>
+<A NAME="automata.ml:5689"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>all_chars</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>char_interval</FONT></I>&nbsp;0&nbsp;255<BR>
+<BR>
+<A NAME="automata.ml:5726"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>complement</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>CharSet.</FONT></I><I><FONT COLOR=maroon>diff</FONT></I>&nbsp;<I><FONT COLOR=maroon>all_chars</FONT></I><BR>
+<BR>
+<A NAME="automata.ml:5767"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>intervals</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<FONT COLOR=purple>rec</FONT>&nbsp;<I><FONT COLOR=maroon>interv</FONT></I>&nbsp;=&nbsp;<FONT COLOR=purple>function</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>i</FONT></I>,&nbsp;[&nbsp;]&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>List.</FONT></I><I><FONT COLOR=maroon>rev</FONT></I>&nbsp;<I><FONT COLOR=maroon>i</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;[&nbsp;],&nbsp;<I><FONT COLOR=maroon>n</FONT></I>::<I><FONT COLOR=maroon>l</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>interv</FONT></I>&nbsp;([(<I><FONT COLOR=maroon>n</FONT></I>,<I><FONT COLOR=maroon>n</FONT></I>)],&nbsp;<I><FONT COLOR=maroon>l</FONT></I>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;(<I><FONT COLOR=maroon>mi</FONT></I>,<I><FONT COLOR=maroon>ma</FONT></I>)::<I><FONT COLOR=maroon>i</FONT></I>&nbsp;<FONT COLOR=purple>as</FONT>&nbsp;<I><FONT COLOR=maroon>is</FONT></I>,&nbsp;<I><FONT COLOR=maroon>n</FONT></I>::<I><FONT COLOR=maroon>l</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>&nbsp;<I><FONT COLOR=maroon>n</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>succ</FONT></I>&nbsp;(<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>&nbsp;<I><FONT COLOR=maroon>ma</FONT></I>)&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>interv</FONT></I>&nbsp;((<I><FONT COLOR=maroon>mi</FONT></I>,<I><FONT COLOR=maroon>n</FONT></I>)::<I><FONT COLOR=maroon>i</FONT></I>,<I><FONT COLOR=maroon>l</FONT></I>)&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>interv</FONT></I>&nbsp;((<I><FONT COLOR=maroon>n</FONT></I>,<I><FONT COLOR=maroon>n</FONT></I>)::<I><FONT COLOR=maroon>is</FONT></I>,<I><FONT COLOR=maroon>l</FONT></I>)<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>interv</FONT></I>&nbsp;([&nbsp;],&nbsp;<I><FONT COLOR=maroon>CharSet.</FONT></I><I><FONT COLOR=maroon>elements</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>)<BR>
+<BR>
+<A NAME="automata.ml:6050"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>output_label</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>char</FONT></I>&nbsp;=&nbsp;<FONT COLOR=purple>function</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<CODE>'"'</CODE>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<TT>"\\\""</TT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<CODE>'\\'</CODE>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<TT>"#92"</TT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>n</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>n</FONT></I>&nbsp;&gt;&nbsp;32&nbsp;&amp;&nbsp;<I><FONT COLOR=maroon>n</FONT></I>&nbsp;&lt;&nbsp;127&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>String.</FONT></I><I><FONT COLOR=maroon>make</FONT></I>&nbsp;1&nbsp;<I><FONT COLOR=maroon>c</FONT></I>&nbsp;<FONT COLOR=purple>else</FONT>&nbsp;<I><FONT COLOR=maroon>sprintf</FONT></I>&nbsp;<TT>"#%d"</TT>&nbsp;<I><FONT COLOR=maroon>n</FONT></I><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>output_interv</FONT></I>&nbsp;(<I><FONT COLOR=maroon>mi</FONT></I>,<I><FONT COLOR=maroon>ma</FONT></I>)&nbsp;=<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>mi</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>ma</FONT></I>&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<TT>"%s&nbsp;"</TT>&nbsp;(<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<I><FONT COLOR=maroon>mi</FONT></I>)&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT>&nbsp;<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>&nbsp;<I><FONT COLOR=maroon>mi</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>pred</FONT></I>&nbsp;(<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>code</FONT></I>&nbsp;<I><FONT COLOR=maroon>ma</FONT></I>)&nbsp;<FONT COLOR=purple>then</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<TT>"%s&nbsp;%s&nbsp;"</TT>&nbsp;(<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<I><FONT COLOR=maroon>mi</FONT></I>)&nbsp;(<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<I><FONT COLOR=maroon>ma</FONT></I>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<TT>"%s-%s&nbsp;"</TT>&nbsp;(<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<I><FONT COLOR=maroon>mi</FONT></I>)&nbsp;(<I><FONT COLOR=maroon>char</FONT></I>&nbsp;<I><FONT COLOR=maroon>ma</FONT></I>)<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>is</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>intervals</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>ics</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>intervals</FONT></I>&nbsp;(<I><FONT COLOR=maroon>complement</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>)&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>List.</FONT></I><I><FONT COLOR=maroon>length</FONT></I>&nbsp;<I><FONT COLOR=maroon>is</FONT></I>&nbsp;&lt;&nbsp;<I><FONT COLOR=maroon>List.</FONT></I><I><FONT COLOR=maroon>length</FONT></I>&nbsp;<I><FONT COLOR=maroon>ics</FONT></I>&nbsp;<FONT COLOR=purple>then</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>List.</FONT></I><I><FONT COLOR=maroon>iter</FONT></I>&nbsp;<I><FONT COLOR=maroon>output_interv</FONT></I>&nbsp;<I><FONT COLOR=maroon>is</FONT></I><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>else</FONT>&nbsp;<FONT COLOR=purple>begin</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<TT>"[^"</TT>;&nbsp;<I><FONT COLOR=maroon>List.</FONT></I><I><FONT COLOR=maroon>iter</FONT></I>&nbsp;<I><FONT COLOR=maroon>output_interv</FONT></I>&nbsp;<I><FONT COLOR=maroon>ics</FONT></I>;&nbsp;<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<TT>"]"</TT><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>end</FONT><BR>
+<BR>
+<A NAME="automata.ml:6721"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>output_transitions</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<I><FONT COLOR=maroon>i</FONT></I>&nbsp;(<I><FONT COLOR=maroon>n</FONT></I>,<I><FONT COLOR=maroon>m</FONT></I>)&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>rev_m</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>ref</FONT></I>&nbsp;<I><FONT COLOR=maroon>IntMap.</FONT></I><I><FONT COLOR=maroon>empty</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>for</FONT>&nbsp;<I><FONT COLOR=maroon>k</FONT></I>&nbsp;=&nbsp;0&nbsp;<FONT COLOR=purple>to</FONT>&nbsp;<I><FONT COLOR=maroon>Array.</FONT></I><I><FONT COLOR=maroon>length</FONT></I>&nbsp;<I><FONT COLOR=maroon>m</FONT></I>&nbsp;-&nbsp;1&nbsp;<FONT COLOR=purple>do</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>j</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>m</FONT></I>.(<I><FONT COLOR=maroon>k</FONT></I>)&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;=&nbsp;<FONT COLOR=purple>try</FONT>&nbsp;<I><FONT COLOR=maroon>IntMap.</FONT></I><I><FONT COLOR=maroon>find</FONT></I>&nbsp;<I><FONT COLOR=maroon>j</FONT></I>&nbsp;!<I><FONT COLOR=maroon>rev_m</FONT></I>&nbsp;<FONT COLOR=purple>with</FONT>&nbsp;<I><FONT COLOR=maroon>Not_found</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<I><FONT COLOR=maroon>CharSet.</FONT></I><I><FONT COLOR=maroon>empty</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>rev_m</FONT></I>&nbsp;:=&nbsp;<I><FONT COLOR=maroon>IntMap.</FONT></I><I><FONT COLOR=maroon>add</FONT></I>&nbsp;<I><FONT COLOR=maroon>j</FONT></I>&nbsp;(<I><FONT COLOR=maroon>CharSet.</FONT></I><I><FONT COLOR=maroon>add</FONT></I>&nbsp;(<I><FONT COLOR=maroon>Char.</FONT></I><I><FONT COLOR=maroon>chr</FONT></I>(<I><FONT COLOR=maroon>k</FONT></I>+<I><FONT COLOR=maroon>n</FONT></I>))&nbsp;<I><FONT COLOR=maroon>s</FONT></I>)&nbsp;!<I><FONT COLOR=maroon>rev_m</FONT></I><BR>&nbsp;&nbsp;
+<FONT COLOR=purple>done</FONT>;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>IntMap.</FONT></I><I><FONT COLOR=maroon>iter</FONT></I><BR>&nbsp;&nbsp;&nbsp;&nbsp;
+(<FONT COLOR=purple>fun</FONT>&nbsp;<I><FONT COLOR=maroon>j</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<TT>"&nbsp;&nbsp;%d&nbsp;-&gt;&nbsp;%d&nbsp;[&nbsp;label&nbsp;=&nbsp;\""</TT>&nbsp;<I><FONT COLOR=maroon>i</FONT></I>&nbsp;<I><FONT COLOR=maroon>j</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>output_label</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<I><FONT COLOR=maroon>s</FONT></I>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<TT>"\"&nbsp;];\n"</TT>)<BR>&nbsp;&nbsp;&nbsp;&nbsp;
+!<I><FONT COLOR=maroon>rev_m</FONT></I><BR>
+<BR>
+<A NAME="automata.ml:7148"></A>
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>to_dot</FONT></I>&nbsp;<I><FONT COLOR=maroon>a</FONT></I>&nbsp;<I><FONT COLOR=maroon>f</FONT></I>&nbsp;=<BR>&nbsp;&nbsp;
+<FONT COLOR=purple>let</FONT>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;=&nbsp;<I><FONT COLOR=maroon>open_out</FONT></I>&nbsp;<I><FONT COLOR=maroon>f</FONT></I>&nbsp;<FONT COLOR=purple>in</FONT><BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<TT>"digraph&nbsp;finite_state_machine&nbsp;{&nbsp;&nbsp;/*&nbsp;rankdir=LR;&nbsp;*/&nbsp;&nbsp;orientation=land;&nbsp;&nbsp;node&nbsp;[shape&nbsp;=&nbsp;doublecircle];"</TT>;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>Array.</FONT></I><I><FONT COLOR=maroon>iteri</FONT></I>&nbsp;(<FONT COLOR=purple>fun</FONT>&nbsp;<I><FONT COLOR=maroon>i</FONT></I>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<FONT FACE=symbol>®</FONT>&nbsp;<FONT COLOR=purple>if</FONT>&nbsp;<I><FONT COLOR=maroon>b</FONT></I>&nbsp;<FONT COLOR=purple>then</FONT>&nbsp;<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<TT>"%d&nbsp;"</TT>&nbsp;<I><FONT COLOR=maroon>i</FONT></I>)&nbsp;<I><FONT COLOR=maroon>a.</FONT></I><I><FONT COLOR=maroon>auto_accept</FONT></I>;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<TT>";\n&nbsp;&nbsp;node&nbsp;[shape&nbsp;=&nbsp;circle];\n"</TT>;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>Array.</FONT></I><I><FONT COLOR=maroon>iteri</FONT></I>&nbsp;(<I><FONT COLOR=maroon>output_transitions</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>)&nbsp;<I><FONT COLOR=maroon>a.</FONT></I><I><FONT COLOR=maroon>auto_trans</FONT></I>;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>fprintf</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I>&nbsp;<TT>"}\n"</TT>;<BR>&nbsp;&nbsp;
+<I><FONT COLOR=maroon>close_out</FONT></I>&nbsp;<I><FONT COLOR=maroon>cout</FONT></I><BR><BR>
+<BR>
+<!--TOC section Index of Identifiers-->
+
+<H2>3.8&nbsp;&nbsp; Index of Identifiers</H2><!--SEC END -->
+<UL>
+<LI>
+ <I><FONT COLOR=maroon>add</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.ml:3200">3.3.3</A>, <A HREF="#regular_expr.ml:1132">3.3.1</A>, <A HREF="#regular_expr.ml:3249">3.3.3</A>, <A HREF="#automata.ml:4031">3.7.4</A>, <A HREF="#automata.ml:5572">3.7.5</A>, <A HREF="#automata.ml:6721">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>add_inter</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp_lexer.mll:68">3.3.3</A>, <A HREF="#regexp_lexer.mll:1311">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>all_chars</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.ml:5689">3.7.5</A>, <A HREF="#automata.ml:5726">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>alt</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:1379">3.2.1</A>, <A HREF="#regular_expr.ml:1132">3.3.1</A>, <A HREF="#regular_expr.ml:2012">3.3.2</A>, <A HREF="#regular_expr.ml:2396">3.3.3</A>, <A HREF="#regular_expr.ml:3249">3.3.3</A>, <A HREF="#regular_expr.ml:4776">3.3.3</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>, <A HREF="#regexp_lexer.mll:702">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>Alt</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.ml:136">3.3.1</A>, <A HREF="#regular_expr.ml:1132">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>ALT</FONT></I> (camlyacc token),&nbsp;&nbsp;<A HREF="#regexp_parser.mly:31">3.3.3</A>, <A HREF="#regexp_parser.mly:202">3.3.3</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>Automata</FONT></I> (module),&nbsp;&nbsp;<A HREF="#automata.mli:0">3.6</A>, <A HREF="#automata.ml:0">3.7</A>, 
+
+<LI> <I><FONT COLOR=maroon>automaton</FONT></I> (type),&nbsp;&nbsp;<A HREF="#automata.mli:341">3.6.1</A>, <A HREF="#automata.ml:449">3.7.1</A>, <A HREF="#automata.mli:359">3.6.1</A>, <A HREF="#automata.mli:811">3.6.2</A>, <A HREF="#automata.mli:1535">3.6.3</A>, <A HREF="#automata.mli:2123">3.6.3</A>, <A HREF="#automata.mli:2180">3.6.3</A>, <A HREF="#automata.mli:2318">3.6.3</A>
+
+<LI> <I><FONT COLOR=maroon>auto_accept</FONT></I> (field),&nbsp;&nbsp;<A HREF="#automata.ml:449">3.7.1</A>, <A HREF="#automata.ml:908">3.7.2</A>, <A HREF="#automata.ml:5134">3.7.4</A>, <A HREF="#automata.ml:7148">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>auto_trans</FONT></I> (field),&nbsp;&nbsp;<A HREF="#automata.ml:449">3.7.1</A>, <A HREF="#automata.ml:908">3.7.2</A>, <A HREF="#automata.ml:5134">3.7.4</A>, <A HREF="#automata.ml:7148">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>char</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:1246">3.2.1</A>, <A HREF="#regular_expr.ml:1643">3.3.1</A>, 
+
+<LI> <I><FONT COLOR=maroon>CHAR</FONT></I> (camlyacc token),&nbsp;&nbsp;<A HREF="#regexp_parser.mly:31">3.3.3</A>, <A HREF="#regexp_parser.mly:202">3.3.3</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>charset</FONT></I> (camllex parsing rule),&nbsp;&nbsp;<A HREF="#regexp_lexer.mll:1311">3.3.3</A>, 
+
+<LI> <I><FONT COLOR=maroon>CharSet</FONT></I> (module),&nbsp;&nbsp;<A HREF="#automata.ml:5438">3.7.5</A>, <A HREF="#automata.ml:5540">3.7.5</A>, <A HREF="#automata.ml:5572">3.7.5</A>, <A HREF="#automata.ml:5726">3.7.5</A>, <A HREF="#automata.ml:5767">3.7.5</A>, <A HREF="#automata.ml:6721">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>CHARSET</FONT></I> (camlyacc token),&nbsp;&nbsp;<A HREF="#regexp_parser.mly:31">3.3.3</A>, <A HREF="#regexp_parser.mly:202">3.3.3</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>char_interv</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:1274">3.2.1</A>, <A HREF="#regular_expr.ml:1708">3.3.1</A>, <A HREF="#regexp_lexer.mll:644">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>Char_interv</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.ml:136">3.3.1</A>, <A HREF="#regular_expr.ml:1643">3.3.1</A>, <A HREF="#regular_expr.ml:1708">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>char_interval</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.ml:5572">3.7.5</A>, <A HREF="#automata.ml:5572">3.7.5</A>, <A HREF="#automata.ml:5689">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>CLOSEPAR</FONT></I> (camlyacc token),&nbsp;&nbsp;<A HREF="#regexp_parser.mly:31">3.3.3</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>compare</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.ml:5438">3.7.5</A>, <A HREF="#automata.ml:5438">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>compile</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.mli:359">3.6.1</A>, <A HREF="#automata.ml:3462">3.7.4</A>, 
+
+<LI> <I><FONT COLOR=maroon>complement</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp_lexer.mll:412">3.3.3</A>, <A HREF="#automata.ml:5726">3.7.5</A>, <A HREF="#regexp_lexer.mll:825">3.3.3</A>, <A HREF="#automata.ml:6050">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>compute_max</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.ml:3214">3.7.4</A>, <A HREF="#automata.ml:3214">3.7.4</A>
+
+<LI> <I><FONT COLOR=maroon>create</FONT></I>,&nbsp;&nbsp;<A HREF="#hashcons.mli:1217">3.1</A>, <A HREF="#regular_expr.ml:853">3.3.1</A>, <A HREF="#automata.ml:3558">3.7.4</A>, <A HREF="#automata.ml:4670">3.7.4</A>
+
+<LI> <I><FONT COLOR=maroon>empty</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:1202">3.2.1</A>, <A HREF="#regular_expr.ml:947">3.3.1</A>, <A HREF="#regular_expr.ml:1471">3.3.1</A>, <A HREF="#regular_expr.ml:2396">3.3.3</A>, <A HREF="#regexp_lexer.mll:702">3.3.3</A>, <A HREF="#automata.ml:3809">3.7.4</A>, <A HREF="#automata.ml:5540">3.7.5</A>, <A HREF="#automata.ml:6721">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>Empty</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.ml:136">3.3.1</A>, <A HREF="#regular_expr.ml:947">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>EOF</FONT></I> (camlyacc token),&nbsp;&nbsp;<A HREF="#regexp_parser.mly:31">3.3.3</A>, <A HREF="#regexp_parser.mly:280">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>epsilon</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:1223">3.2.1</A>, <A HREF="#regular_expr.ml:978">3.3.1</A>, <A HREF="#regular_expr.ml:1013">3.3.1</A>, <A HREF="#regular_expr.ml:1779">3.3.1</A>, <A HREF="#regular_expr.ml:2012">3.3.2</A>, <A HREF="#regular_expr.ml:2396">3.3.3</A>, <A HREF="#regular_expr.ml:4089">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>Epsilon</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.ml:136">3.3.1</A>, <A HREF="#regular_expr.ml:978">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>equal</FONT></I>,&nbsp;&nbsp;<A HREF="#hashcons.mli:1114">3.1</A>, <A HREF="#regular_expr.ml:729">3.3.1</A>, <A HREF="#automata.ml:3306">3.7.4</A>, 
+
+<LI> <I><FONT COLOR=maroon>exec_automaton</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.mli:811">3.6.2</A>, <A HREF="#automata.ml:908">3.7.2</A>, <A HREF="#automata.ml:2134">3.7.3</A>
+
+<LI> <I><FONT COLOR=maroon>firstchars</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:2094">3.2.2</A>, <A HREF="#regular_expr.ml:4089">3.3.3</A>, <A HREF="#regular_expr.ml:4089">3.3.3</A>, <A HREF="#regular_expr.ml:4776">3.3.3</A>, <A HREF="#automata.ml:4031">3.7.4</A>
+
+<LI> <I><FONT COLOR=maroon>fprint</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:2713">3.2.3</A>, <A HREF="#regular_expr.ml:4884">3.3.3</A>, <A HREF="#regular_expr.ml:4884">3.3.3</A>, <A HREF="#regular_expr.ml:5343">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>from_string</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp_syntax.mli:2027">3.4</A>, <A HREF="#regexp_syntax.ml:4">3.5</A>, <A HREF="#regexp_syntax.ml:4">3.5</A>
+
+<LI> <I><FONT COLOR=maroon>hash</FONT></I>,&nbsp;&nbsp;<A HREF="#hashcons.mli:1114">3.1</A>, <A HREF="#regular_expr.ml:729">3.3.1</A>, <A HREF="#automata.ml:3306">3.7.4</A>, <A HREF="#regular_expr.ml:729">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>Hash</FONT></I> (module),&nbsp;&nbsp;<A HREF="#regular_expr.ml:729">3.3.1</A>, <A HREF="#regular_expr.ml:853">3.3.1</A>, <A HREF="#regular_expr.ml:897">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>hashcons</FONT></I>,&nbsp;&nbsp;<A HREF="#hashcons.mli:1217">3.1</A>, <A HREF="#regular_expr.ml:897">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>Hashcons</FONT></I> (module),&nbsp;&nbsp;<A HREF="#hashcons.mli:0">3.1</A>, <A HREF="#regular_expr.ml:69">3.3.1</A>, <A HREF="#regular_expr.ml:86">3.3.1</A>, <A HREF="#regular_expr.ml:729">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>HashedType</FONT></I> (sig),&nbsp;&nbsp;<A HREF="#hashcons.mli:1114">3.1</A>, <A HREF="#hashcons.mli:1464">3.1</A>
+
+<LI> <I><FONT COLOR=maroon>HashRegexp</FONT></I> (module),&nbsp;&nbsp;<A HREF="#automata.ml:3306">3.7.4</A>, <A HREF="#automata.ml:3558">3.7.4</A>, <A HREF="#automata.ml:4031">3.7.4</A>
+
+<LI> <I><FONT COLOR=maroon>hash_cons</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.ml:897">3.3.1</A>, <A HREF="#regular_expr.ml:947">3.3.1</A>, <A HREF="#regular_expr.ml:978">3.3.1</A>, <A HREF="#regular_expr.ml:1013">3.3.1</A>, <A HREF="#regular_expr.ml:1132">3.3.1</A>, <A HREF="#regular_expr.ml:1471">3.3.1</A>, <A HREF="#regular_expr.ml:1643">3.3.1</A>, <A HREF="#regular_expr.ml:1708">3.3.1</A>, <A HREF="#regular_expr.ml:1779">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>hash_consed</FONT></I> (type),&nbsp;&nbsp;<A HREF="#hashcons.mli:1016">3.1</A>, <A HREF="#hashcons.mli:1217">3.1</A>, <A HREF="#regular_expr.ml:86">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>hash_consing_table</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.ml:853">3.3.1</A>, <A HREF="#regular_expr.ml:897">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>hkey</FONT></I> (field),&nbsp;&nbsp;<A HREF="#hashcons.mli:1016">3.1</A>, 
+
+<LI> <I><FONT COLOR=maroon>insert</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.ml:3249">3.3.3</A>, <A HREF="#regular_expr.ml:3249">3.3.3</A>, <A HREF="#regular_expr.ml:3979">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>insert_list</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.ml:3979">3.3.3</A>, <A HREF="#regular_expr.ml:4089">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>interv</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp_lexer.mll:644">3.3.3</A>, <A HREF="#regexp_lexer.mll:702">3.3.3</A>, <A HREF="#regexp_lexer.mll:825">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>intervals</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.ml:5767">3.7.5</A>, <A HREF="#automata.ml:6050">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>IntMap</FONT></I> (module),&nbsp;&nbsp;<A HREF="#automata.ml:3062">3.7.4</A>, <A HREF="#automata.ml:3809">3.7.4</A>, <A HREF="#automata.ml:4031">3.7.4</A>, <A HREF="#automata.ml:5134">3.7.4</A>, <A HREF="#automata.ml:6721">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>IntSet</FONT></I> (module),&nbsp;&nbsp;<A HREF="#automata.ml:3138">3.7.4</A>, <A HREF="#automata.ml:3809">3.7.4</A>, <A HREF="#automata.ml:4031">3.7.4</A>, <A HREF="#automata.ml:5134">3.7.4</A>
+
+<LI> <I><FONT COLOR=maroon>key</FONT></I> (type),&nbsp;&nbsp;<A HREF="#hashcons.mli:1217">3.1</A>, <A HREF="#hashcons.mli:1217">3.1</A>, <A HREF="#hashcons.mli:1464">3.1</A>
+
+<LI> <I><FONT COLOR=maroon>Make</FONT></I> (module),&nbsp;&nbsp;<A HREF="#hashcons.mli:1464">3.1</A>, <A HREF="#regular_expr.ml:729">3.3.1</A>, <A HREF="#automata.ml:3062">3.7.4</A>, <A HREF="#automata.ml:3138">3.7.4</A>, <A HREF="#automata.ml:3306">3.7.4</A>, <A HREF="#automata.ml:5438">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>make_charset</FONT></I>,&nbsp;&nbsp;<A HREF="#regexp_lexer.mll:702">3.3.3</A>, <A HREF="#regexp_lexer.mll:702">3.3.3</A>, <A HREF="#regexp_lexer.mll:825">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>match_string</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:2637">3.2.3</A>, <A HREF="#regular_expr.ml:2941">3.3.3</A>, 
+
+<LI> <I><FONT COLOR=maroon>node</FONT></I> (field),&nbsp;&nbsp;<A HREF="#hashcons.mli:1016">3.1</A>, <A HREF="#regular_expr.ml:1013">3.3.1</A>, <A HREF="#regular_expr.ml:1132">3.3.1</A>, <A HREF="#regular_expr.ml:1471">3.3.1</A>, <A HREF="#regular_expr.ml:2117">3.3.3</A>, <A HREF="#regular_expr.ml:2396">3.3.3</A>, <A HREF="#regular_expr.ml:4089">3.3.3</A>, <A HREF="#regular_expr.ml:4884">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>no_chars</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.ml:5540">3.7.5</A>, <A HREF="#automata.ml:5572">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>nullable</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:2020">3.2.2</A>, <A HREF="#regular_expr.ml:2117">3.3.3</A>, <A HREF="#regular_expr.ml:2117">3.3.3</A>, <A HREF="#regular_expr.ml:2396">3.3.3</A>, <A HREF="#regular_expr.ml:2941">3.3.3</A>, <A HREF="#regular_expr.ml:4089">3.3.3</A>, <A HREF="#automata.ml:4031">3.7.4</A>
+
+<LI> <I><FONT COLOR=maroon>OPENPAR</FONT></I> (camlyacc token),&nbsp;&nbsp;<A HREF="#regexp_parser.mly:31">3.3.3</A>, <A HREF="#regexp_parser.mly:202">3.3.3</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>opt</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:1457">3.2.1</A>, <A HREF="#regular_expr.ml:2012">3.3.2</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>output_label</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.ml:6050">3.7.5</A>, <A HREF="#automata.ml:6721">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>output_transitions</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.ml:6721">3.7.5</A>, <A HREF="#automata.ml:7148">3.7.5</A>
+
+<LI> <I><FONT COLOR=maroon>PLUS</FONT></I> (camlyacc token),&nbsp;&nbsp;<A HREF="#regexp_parser.mly:31">3.3.3</A>, <A HREF="#regexp_parser.mly:202">3.3.3</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>print</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:2763">3.2.3</A>, <A HREF="#regular_expr.ml:5343">3.3.3</A>, 
+
+<LI> <I><FONT COLOR=maroon>QUESTION</FONT></I> (camlyacc token),&nbsp;&nbsp;<A HREF="#regexp_parser.mly:31">3.3.3</A>, <A HREF="#regexp_parser.mly:202">3.3.3</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>regexp</FONT></I> (type),&nbsp;&nbsp;<A HREF="#regular_expr.mli:1156">3.2.1</A>, <A HREF="#regular_expr.ml:86">3.3.1</A>, <A HREF="#regular_expr.mli:1170">3.2.1</A>, <A HREF="#regular_expr.mli:1202">3.2.1</A>, <A HREF="#regular_expr.mli:1223">3.2.1</A>, <A HREF="#regular_expr.mli:1246">3.2.1</A>, <A HREF="#regular_expr.mli:1274">3.2.1</A>, <A HREF="#regular_expr.mli:1317">3.2.1</A>, <A HREF="#regular_expr.mli:1349">3.2.1</A>, <A HREF="#regular_expr.mli:1379">3.2.1</A>, <A HREF="#regular_expr.mli:1418">3.2.1</A>, <A HREF="#regular_expr.mli:1457">3.2.1</A>, <A HREF="#regular_expr.mli:1486">3.2.1</A>, <A HREF="#regular_expr.mli:2020">3.2.2</A>, <A HREF="#regular_expr.mli:2052">3.2.2</A>, <A HREF="#regular_expr.mli:2094">3.2.2</A>, <A HREF="#regular_expr.mli:2637">3.2.3</A>, <A HREF="#regular_expr.mli:2713">3.2.3</A>, <A HREF="#regular_expr.mli:2763">3.2.3</A>, <A HREF="#regular_expr.ml:136">3.3.1</A>, <A HREF="#regexp_parser.mly:31">3.3.3</A>, <A HREF="#regexp_parser.mly:139">3.3.3</A>, <A HREF="#regexp_syntax.mli:2027">3.4</A>, <A HREF="#automata.mli:359">3.6.1</A>, <A HREF="#automata.ml:3306">3.7.4</A>
+
+<LI> <I><FONT COLOR=maroon>regexp</FONT></I> (camlyacc non-terminal),&nbsp;&nbsp;<A HREF="#regexp_parser.mly:327">3.3.3</A>, <A HREF="#regexp_parser.mly:280">3.3.3</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>regexp_eq</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.ml:371">3.3.1</A>, <A HREF="#regular_expr.ml:729">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>Regexp_lexer</FONT></I> (module),&nbsp;&nbsp;<A HREF="#regexp_lexer.mll:0">3.3.3</A>, <A HREF="#regexp_syntax.ml:4">3.5</A>
+
+<LI> <I><FONT COLOR=maroon>Regexp_parser</FONT></I> (module),&nbsp;&nbsp;<A HREF="#regexp_parser.mly:0">3.3.3</A>, <A HREF="#regexp_lexer.mll:28">3.3.3</A>, <A HREF="#regexp_syntax.ml:4">3.5</A>
+
+<LI> <I><FONT COLOR=maroon>regexp_start</FONT></I> (camlyacc non-terminal),&nbsp;&nbsp;<A HREF="#regexp_parser.mly:280">3.3.3</A>, <A HREF="#regexp_parser.mly:139">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>regexp_struct</FONT></I> (type),&nbsp;&nbsp;<A HREF="#regular_expr.ml:86">3.3.1</A>, <A HREF="#regular_expr.ml:86">3.3.1</A>, <A HREF="#regular_expr.ml:136">3.3.1</A>, <A HREF="#regular_expr.ml:729">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>Regexp_syntax</FONT></I> (module),&nbsp;&nbsp;<A HREF="#regexp_syntax.mli:0">3.4</A>, <A HREF="#regexp_syntax.ml:0">3.5</A>, 
+
+<LI> <I><FONT COLOR=maroon>Regular_expr</FONT></I> (module),&nbsp;&nbsp;<A HREF="#regular_expr.mli:0">3.2</A>, <A HREF="#regular_expr.ml:0">3.3</A>, <A HREF="#regexp_parser.mly:4">3.3.3</A>, <A HREF="#regexp_parser.mly:31">3.3.3</A>, <A HREF="#regexp_parser.mly:139">3.3.3</A>, <A HREF="#regexp_lexer.mll:6">3.3.3</A>, <A HREF="#regexp_syntax.mli:2027">3.4</A>, <A HREF="#automata.mli:359">3.6.1</A>, <A HREF="#automata.ml:52">3.7</A>, <A HREF="#automata.ml:3306">3.7.4</A>, <A HREF="#automata.ml:4031">3.7.4</A>
+
+<LI> <I><FONT COLOR=maroon>residual</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:2052">3.2.2</A>, <A HREF="#regular_expr.ml:2396">3.3.3</A>, <A HREF="#regular_expr.ml:2396">3.3.3</A>, <A HREF="#regular_expr.ml:2941">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>S</FONT></I> (sig),&nbsp;&nbsp;<A HREF="#hashcons.mli:1217">3.1</A>, <A HREF="#hashcons.mli:1464">3.1</A>
+
+<LI> <I><FONT COLOR=maroon>search_forward</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.mli:1535">3.6.3</A>, <A HREF="#automata.ml:2134">3.7.3</A>, <A HREF="#automata.ml:2134">3.7.3</A>, <A HREF="#automata.ml:2461">3.7.3</A>, <A HREF="#automata.ml:2673">3.7.3</A>
+
+<LI> <I><FONT COLOR=maroon>seq</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:1418">3.2.1</A>, <A HREF="#regular_expr.ml:1471">3.3.1</A>, <A HREF="#regular_expr.ml:1979">3.3.2</A>, <A HREF="#regular_expr.ml:2396">3.3.3</A>, <A HREF="#regular_expr.ml:4089">3.3.3</A>, <A HREF="#regular_expr.ml:4776">3.3.3</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>Seq</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.ml:136">3.3.1</A>, <A HREF="#regular_expr.ml:1471">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>some</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:1486">3.2.1</A>, <A HREF="#regular_expr.ml:1979">3.3.2</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>split_delim</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.mli:2180">3.6.3</A>, <A HREF="#automata.ml:2673">3.7.3</A>, 
+
+<LI> <I><FONT COLOR=maroon>split_strings</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.mli:2123">3.6.3</A>, <A HREF="#automata.ml:2461">3.7.3</A>, 
+
+<LI> <I><FONT COLOR=maroon>star</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:1349">3.2.1</A>, <A HREF="#regular_expr.ml:1013">3.3.1</A>, <A HREF="#regular_expr.ml:1979">3.3.2</A>, <A HREF="#regular_expr.ml:4776">3.3.3</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>Star</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.ml:136">3.3.1</A>, <A HREF="#regular_expr.ml:1013">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>STAR</FONT></I> (camlyacc token),&nbsp;&nbsp;<A HREF="#regexp_parser.mly:31">3.3.3</A>, <A HREF="#regexp_parser.mly:202">3.3.3</A>, <A HREF="#regexp_parser.mly:327">3.3.3</A>
+
+<LI> <I><FONT COLOR=maroon>string</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:1317">3.2.1</A>, <A HREF="#regular_expr.ml:1779">3.3.1</A>, 
+
+<LI> <I><FONT COLOR=maroon>String</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.ml:136">3.3.1</A>, <A HREF="#regular_expr.ml:1779">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>t</FONT></I> (type),&nbsp;&nbsp;<A HREF="#hashcons.mli:1114">3.1</A>, <A HREF="#hashcons.mli:1217">3.1</A>, <A HREF="#regular_expr.ml:729">3.3.1</A>, <A HREF="#regexp_parser.mly:31">3.3.3</A>, <A HREF="#regexp_parser.mly:139">3.3.3</A>, <A HREF="#automata.ml:3062">3.7.4</A>, <A HREF="#automata.ml:3138">3.7.4</A>, <A HREF="#automata.ml:3306">3.7.4</A>, <A HREF="#automata.ml:5438">3.7.5</A>, <A HREF="#hashcons.mli:1114">3.1</A>, <A HREF="#hashcons.mli:1217">3.1</A>, <A HREF="#hashcons.mli:1464">3.1</A>, <A HREF="#regular_expr.ml:136">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>tag</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.ml:3062">3.7.4</A>, <A HREF="#automata.ml:3138">3.7.4</A>, 
+
+<LI> <I><FONT COLOR=maroon>tag</FONT></I> (field),&nbsp;&nbsp;<A HREF="#hashcons.mli:1016">3.1</A>, <A HREF="#regular_expr.ml:345">3.3.1</A>
+
+<LI> <I><FONT COLOR=maroon>token</FONT></I> (camllex parsing rule),&nbsp;&nbsp;<A HREF="#regexp_lexer.mll:825">3.3.3</A>, 
+
+<LI> <I><FONT COLOR=maroon>to_dot</FONT></I>,&nbsp;&nbsp;<A HREF="#automata.mli:2318">3.6.3</A>, <A HREF="#automata.ml:7148">3.7.5</A>, 
+
+<LI> <I><FONT COLOR=maroon>uniq_tag</FONT></I>,&nbsp;&nbsp;<A HREF="#regular_expr.mli:1170">3.2.1</A>, <A HREF="#regular_expr.ml:345">3.3.1</A>, <A HREF="#automata.ml:3306">3.7.4</A></UL>
+<BR>
+<BR>
+<!--HTMLFOOT-->
+<!--ENDHTML-->
+
+<!--FOOTER-->
+<HR SIZE=2>
+<BLOCKQUOTE><EM>This document was translated from L<sup>A</sup>T<sub>E</sub>X by
+</EM><A HREF="http://pauillac.inria.fr/~maranget/hevea/index.html"><EM>H</EM><EM><FONT SIZE=2><sup>E</sup></FONT></EM><EM>V</EM><EM><FONT SIZE=2><sup>E</sup></FONT></EM><EM>A</EM></A><EM>.
+</EM></BLOCKQUOTE></BODY>
+</HTML>
+

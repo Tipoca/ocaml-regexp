@@ -1,0 +1,52 @@
+
+REQUIREMENTS
+------------
+
+  Objective CAML >= 2.04
+
+INSTALLATION PROCEDURE 
+----------------------
+
+  Simply type the commands
+
+    ./configure
+    make
+ 
+  and then become root if necessary, and type
+
+    make install
+
+  This will install the following files:
+
+    In OCaml libdir:
+ 
+       regexp.cmi regexp.cma regexp.cmxa regexp.a
+
+    (required files for the regexp library)
+
+    In OCaml bindir: 
+
+       ocamlregexp
+
+    an OCaml toplevel including the regexp library 
+
+ADVANCED FEATURES
+-----------------
+
+  This library is not completely thread-safe, because of hash-consing
+  of regular expressions. You may compile a modified version that is
+  supposed to be thread-safe (please tell me if you find a bug !) by
+
+  ./configure -enable-thread
+  make
+
+  The built libraries are then named regexp-thread.cma and
+  regexp-thread.cmxa  
+
+
+
+
+% Local Variables: 
+% mode: text
+% End: 
+

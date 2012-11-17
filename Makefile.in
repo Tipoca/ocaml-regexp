@@ -1,0 +1,176 @@
+VERSION=0.3
+
+OCAMLBEST=@OCAMLBEST@
+
+CAMLC    = @OCAMLC@
+CAMLCOPT = @OCAMLOPT@
+CAMLDEP  = @OCAMLDEP@
+
+BINDIR= @OCAMLBIN@
+LIBDIR= @OCAMLLIB@
+LIBNAME= regexp@THREAD@
+
+ZLIBS    = 
+DEBUG    = -g
+PROFILE  = @PROFILE@
+STRIP    = @STRIP@
+THREAD   = @THREAD@
+THREADCMA = @THREADCMA@
+THREADCMXA = @THREADCMXA@
+
+BYTEFLAGS= $(ZLIBS) $(THREAD) $(DEBUG)
+OPTFLAGS = $(ZLIBS) $(THREAD) $(PROFILE) -unsafe 
+
+CMO = gen_lock.cmo hashcons.cmo ptset.cmo regular_expr.cmo \
+	regexp_parser.cmo regexp_lexer.cmo regexp_syntax.cmo \
+	inttagset.cmo inttagmap.cmo automata.cmo regexp.cmo
+
+DOC = hashcons.mli regular_expr.mli regular_expr.ml \
+	regexp_parser.mly regexp_lexer.mll \
+	regexp_syntax.mli regexp_syntax.ml automata.mli automata.ml
+
+CMX = $(CMO:.cmo=.cmx)
+
+default: @OCAMLBEST@
+
+doc: regexp.ps regexp.pdf regexp.html
+
+install: install.@OCAMLBEST@ 
+
+install.opt: opt
+	cp -f regexp.cmi $(LIBNAME).cma $(LIBNAME).a $(LIBNAME).cmxa $(LIBDIR)
+	cp -f ocamlregexp $(BINDIR)
+
+install.byte: byte
+	cp -f regexp.cmi $(LIBNAME).cma $(LIBDIR)
+	cp -f ocamlregexp $(BINDIR)
+
+opt: $(LIBNAME).cma ocamlregexp $(LIBNAME).cmxa tests
+
+byte: $(LIBNAME).cma ocamlregexp tests.byte
+
+tests: $(LIBNAME).cmxa tests.ml
+	$(CAMLCOPT) $(OPTFLAGS) -o tests $(THREADCMXA) $(LIBNAME).cmxa tests.ml
+	$(STRIP) tests
+
+tests.byte: $(LIBNAME).cma tests.ml
+	$(CAMLC) $(BYTEFLAGS) -o tests $(THREADCMA) $(LIBNAME).cma tests.ml
+
+$(LIBNAME).cmxa: $(CMX)
+	$(CAMLCOPT) $(OPTFLAGS) -a -o $(LIBNAME).cmxa $(CMX)
+
+$(LIBNAME).cma: $(CMO)
+	$(CAMLC) $(BYTEFLAGS) -a -o $(LIBNAME).cma $(CMO)
+
+ocamlregexp: $(LIBNAME).cma toplevel_banner.cmo
+	ocamlmktop $(BYTEFLAGS) -o ocamlregexp $(THREADCMA) \
+		$(LIBNAME).cma toplevel_banner.cmo 
+
+toplevel_banner.ml: Makefile
+	echo 'Format.printf "(entering toplevel with regexp-'$(VERSION)' library)@.";;' > toplevel_banner.ml
+
+
+implem.tex: $(DOC) Makefile
+	ocamlweb -o implem.tex --noweb --header --nopreamble $(DOC)
+
+library.tex: regexp.mli Makefile
+	ocamlweb -o library.tex --noweb --header --nopreamble regexp.mli
+
+dependency-graph.eps: .depend
+	ocamldot .depend > dependency-graph.dot
+	dot -Tps dependency-graph.dot -o dependency-graph.eps
+
+regexp.html: regexp.tex library.tex dependency-graph.eps implem.tex regexp.aux
+	hevea -fix -exec xxdate.exe /users/demons/demons/tex/inputs/ocamlweb.sty regexp.tex
+
+regexp.dvi regexp.aux: regexp.tex library.tex dependency-graph.eps implem.tex 
+	latex regexp
+	grep -q "Rerun" regexp.log && (latex regexp) || true
+
+regexp.ps: regexp.dvi
+	dvips -D300 -o regexp.ps regexp.dvi
+
+regexp.pdf: regexp.ps
+	ps2pdf regexp.ps regexp.pdf
+
+regexp_parser.mli regexp_parser.ml: regexp_parser.mly
+	ocamlyacc -v regexp_parser.mly
+
+gen_lock.ml: lock$(THREAD).ml
+	echo '# 1 "'lock$(THREAD).ml'"' > gen_lock.ml
+	cat lock$(THREAD).ml >> gen_lock.ml
+
+Makefile: Makefile.in config.status
+	./config.status
+     
+config.status: configure
+	./config.status --recheck
+
+configure: configure.in
+	autoconf 
+
+# generic rules :
+#################
+
+.SUFFIXES: .mli .ml .cmi .cmo .cmx .mll
+
+.mll.ml:
+	ocamllex $<
+
+.mli.cmi:
+	$(CAMLC) -c $(BYTEFLAGS) $<
+
+.ml.cmo:
+	$(CAMLC) -c $(BYTEFLAGS) $<
+
+.ml.o:
+	$(CAMLCOPT) -c $(OPTFLAGS) $<
+
+.ml.cmx:
+	$(CAMLCOPT) -c $(OPTFLAGS) $<
+
+
+# distrib
+#########
+
+DISTRIB=regexp-$(VERSION)
+URL=/users/demons/marche/WWW/regexp
+
+distrib: .depend doc
+	rm -rf $(DISTRIB)
+	mkdir $(DISTRIB)
+	cp configure.in configure Makefile.in .depend $(DISTRIB)
+	rm -f $(GENERATED)
+	cp *.ml* $(DISTRIB)
+	cp regexp.tex $(DISTRIB)
+	cp CHANGES INSTALL LGPL $(DISTRIB)
+	cp -f regexp.ps regexp.pdf regexp.html regexp[0-9][0-9][0-9].gif $(DISTRIB)
+	tar zcvf $(DISTRIB).tar.gz $(DISTRIB)
+	rm -rf $(DISTRIB)
+	cp -f CHANGES regexp.ps regexp.pdf regexp.html regexp[0-9][0-9][0-9].gif $(DISTRIB).tar.gz $(URL)
+
+# clean and depend
+##################
+
+GENERATED = gen_lock.ml regexp_lexer.ml regexp_parser.mli regexp_parser.ml toplevel_banner.ml
+
+clean:
+	rm -f *~ *.cm[iox] *.o 
+	rm -f tests tests.byte ocamlregexp regexp.cma regexp.cmxa regexp.a
+	rm -f $(GENERATED)
+	rm -f regexp_parser.output gmon.out implem.tex library.tex 
+	rm -f regexp.dvi regexp.aux regexp.log regexp.toc 
+	rm -f regexp.html regexp.haux regexp[0-9][0-9][0-9].gif
+	rm -f regexp.ps regexp.pdf
+	rm -f $(DISTRIB).tar.gz
+	rm -f dependency-graph.dot dependency-graph.eps
+
+dist-clean: clean
+	rm configure config.cache config.log config.status Makefile 
+
+depend .depend: $(GENERATED)
+	rm -f .depend
+	ocamldep $(ZLIBS) *.mli *.ml > .depend
+
+include .depend
+

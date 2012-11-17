@@ -1,0 +1,35 @@
+automata.cmi: regular_expr.cmi 
+classical_automata.cmi: regular_expr.cmi 
+ptset.cmi: hashcons.cmi 
+regexp_parser.cmi: regular_expr.cmi 
+regexp_syntax.cmi: regular_expr.cmi 
+automata.cmo: inttagmap.cmi inttagset.cmi regular_expr.cmi automata.cmi 
+automata.cmx: inttagmap.cmx inttagset.cmx regular_expr.cmx automata.cmi 
+classical_automata.cmo: regexp_lexer.cmo regular_expr.cmi \
+    classical_automata.cmi 
+classical_automata.cmx: regexp_lexer.cmx regular_expr.cmx \
+    classical_automata.cmi 
+classical_regular_expr.cmo: classical_regular_expr.cmi 
+classical_regular_expr.cmx: classical_regular_expr.cmi 
+gen_lock.cmo: gen_lock.cmi 
+gen_lock.cmx: gen_lock.cmi 
+hashcons.cmo: gen_lock.cmi hashcons.cmi 
+hashcons.cmx: gen_lock.cmx hashcons.cmi 
+inttagmap.cmo: inttagmap.cmi 
+inttagmap.cmx: inttagmap.cmi 
+inttagset.cmo: inttagset.cmi 
+inttagset.cmx: inttagset.cmi 
+ptset.cmo: hashcons.cmi ptset.cmi 
+ptset.cmx: hashcons.cmx ptset.cmi 
+regexp.cmo: automata.cmi regexp_syntax.cmi regular_expr.cmi regexp.cmi 
+regexp.cmx: automata.cmx regexp_syntax.cmx regular_expr.cmx regexp.cmi 
+regexp_lexer.cmo: regexp_parser.cmi regular_expr.cmi 
+regexp_lexer.cmx: regexp_parser.cmx regular_expr.cmx 
+regexp_parser.cmo: regular_expr.cmi regexp_parser.cmi 
+regexp_parser.cmx: regular_expr.cmx regexp_parser.cmi 
+regexp_syntax.cmo: regexp_lexer.cmo regexp_parser.cmi regexp_syntax.cmi 
+regexp_syntax.cmx: regexp_lexer.cmx regexp_parser.cmx regexp_syntax.cmi 
+regular_expr.cmo: hashcons.cmi ptset.cmi regular_expr.cmi 
+regular_expr.cmx: hashcons.cmx ptset.cmx regular_expr.cmi 
+tests.cmo: automata.cmi regexp_syntax.cmi regular_expr.cmi 
+tests.cmx: automata.cmx regexp_syntax.cmx regular_expr.cmx 

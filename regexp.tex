@@ -1,0 +1,76 @@
+\documentclass[a4paper,twoside]{report}
+
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage{url}
+
+%BEGIN LATEX
+\setlength{\textwidth}{16cm}
+\setlength{\textheight}{23cm}
+\setlength{\oddsidemargin}{0cm}
+\setlength{\evensidemargin}{0cm}
+\setlength{\topmargin}{0cm}
+\renewcommand{\textfraction}{0.01}
+\renewcommand{\topfraction}{.99}
+%END LATEX
+
+\usepackage[noweb]{ocamlweb}
+\usepackage{graphics}
+
+\renewcommand{\ocwbt}[1]{\textsl{#1}}
+\renewcommand{\ocwlowerid}[1]{\textsl{#1\/}}
+\renewcommand{\ocwupperid}[1]{\textsl{#1\/}}
+\renewcommand{\ocwmodule}[1]{\section{Implementation of module \ocwupperid{#1}}}
+\renewcommand{\ocwinterface}[1]{\section{Module \ocwupperid{#1}}}
+
+%BEGIN LATEX
+\renewcommand{\ocwbeginindex}{\renewcommand{\indexname}{Index of Identifiers}\begin{theindex}}
+%END LATEX
+%HEVEA\renewcommand{\ocwbeginindex}{\section{Index of Identifiers}\addcontentsline{toc}{section}{\indexname}\begin{itemize}}
+%HEVEA\renewcommand{\ocwendindex}{\end{itemize}}
+
+\begin{document}
+\sloppy
+
+\title{A simple library for regular expressions}
+\author{Claude Marché}
+\date{\today}
+
+\maketitle
+
+\tableofcontents
+
+\chapter{Introduction}
+
+This library implements simple use of regular expressions. It provides
+direct definitions of regular expressions form the usual
+constructions, or definition of such expressions form a syntactic
+manner using GNU regexp syntax. It provides a simple compilation of
+regexp into a deterministic automaton, and use of such an automaton for
+matching and searching.
+
+\chapter{Library documentation}
+
+This is the documentation for use of the library. It provides all
+functions in one module.
+
+\input{library}
+
+\chapter{Documentation of implementation}
+
+This part describe the implementation of the library. It provides
+several modules which depends each other as shown by the graph below.
+ 
+\begin{center}
+\includegraphics{dependency-graph.eps}
+\end{center}
+
+\input{implem}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
